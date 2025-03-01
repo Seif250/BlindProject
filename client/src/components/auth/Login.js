@@ -39,19 +39,23 @@ const Login = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
+                    bgcolor: 'background.paper',
+                    boxShadow: 3,
+                    borderRadius: 2,
+                    p: 4,
                 }}
             >
-                <Typography component="h1" variant="h5">
+                <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
                     تسجيل الدخول
                 </Typography>
 
                 {error && (
-                    <Alert severity="error" sx={{ mt: 2, width: '100%' }}>
+                    <Alert severity="error" sx={{ mt: 2, mb: 2, width: '100%', boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)' }}>
                         {error}
                     </Alert>
                 )}
 
-                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
                     <TextField
                         margin="normal"
                         required
@@ -64,6 +68,7 @@ const Login = () => {
                         value={formData.email}
                         onChange={handleChange}
                         dir="rtl"
+                        sx={{ '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'primary.main' }, '&:hover fieldset': { borderColor: 'primary.dark' }, '&.Mui-focused fieldset': { borderColor: 'primary.dark' } } }}
                     />
                     <TextField
                         margin="normal"
@@ -77,12 +82,13 @@ const Login = () => {
                         value={formData.password}
                         onChange={handleChange}
                         dir="rtl"
+                        sx={{ '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'primary.main' }, '&:hover fieldset': { borderColor: 'primary.dark' }, '&.Mui-focused fieldset': { borderColor: 'primary.dark' } } }}
                     />
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
+                        sx={{ mt: 3, mb: 2, bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
                     >
                         تسجيل الدخول
                     </Button>
@@ -90,6 +96,7 @@ const Login = () => {
                         fullWidth
                         variant="text"
                         onClick={() => navigate('/register')}
+                        sx={{ color: '#1976d2', '&:hover': { bgcolor: 'transparent', color: '#1565c0' } }}
                     >
                         ليس لديك حساب؟ سجل الآن
                     </Button>

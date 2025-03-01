@@ -2,14 +2,13 @@ import { styled } from '@mui/material/styles';
 import { Typography, Button, Card, Avatar, AppBar, Paper } from '@mui/material';
 
 export const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(3),
-  borderRadius: 16,
+  padding: theme.spacing(2),
+  borderRadius: 8,
   backgroundColor: '#FFFFFF',
-  border: '1px solid #E0E0E0',
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
-  transition: 'transform 0.3s ease-in-out',
+  border: '1px solid rgba(0, 0, 0, 0.08)',
+  boxShadow: 'none',
   '&:hover': {
-    transform: 'translateY(-5px)',
+    boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.08)',
   }
 }));
 
@@ -20,14 +19,13 @@ export const RedButton = styled(Button)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   gap: theme.spacing(2),
-  background: theme.palette.primary.main,
+  background: '#0A66C2',
   color: 'white',
-  borderRadius: 16,
-  transition: 'all 0.3s ease-in-out',
+  borderRadius: 8,
+  boxShadow: 'none',
   '&:hover': {
-    transform: 'scale(1.05)',
-    background: theme.palette.primary.dark,
-    boxShadow: '0 10px 20px rgba(211, 47, 47, 0.2)',
+    background: '#004182',
+    boxShadow: 'none',
   }
 }));
 
@@ -38,48 +36,117 @@ export const GreenButton = styled(Button)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   gap: theme.spacing(2),
-  background: theme.palette.secondary.main,
+  background: '#057642',
   color: 'white',
-  borderRadius: 16,
-  transition: 'all 0.3s ease-in-out',
+  borderRadius: 8,
+  boxShadow: 'none',
   '&:hover': {
-    transform: 'scale(1.05)',
-    background: theme.palette.secondary.dark,
-    boxShadow: '0 10px 20px rgba(46, 125, 50, 0.2)',
+    background: '#046236',
+    boxShadow: 'none',
   }
 }));
 
 export const GradientTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.main,
-  fontWeight: 'bold',
+  color: '#000000',
+  fontWeight: 600,
   textAlign: 'center',
   position: 'relative',
+  padding: '0 0 16px 0',
   '&::after': {
     content: '""',
     position: 'absolute',
-    bottom: -8,
+    bottom: 0,
     left: '50%',
     transform: 'translateX(-50%)',
-    width: 60,
-    height: 3,
-    background: theme.palette.primary.main,
-    borderRadius: 2
+    width: 50,
+    height: 1,
+    background: 'rgba(0, 0, 0, 0.08)',
+    transition: 'width 0.3s ease',
   }
 }));
 
 export const StyledAvatar = styled(Avatar)(({ theme }) => ({
   width: 150,
   height: 150,
-  border: '4px solid #FFFFFF',
-  boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)',
-  transition: 'all 0.3s ease',
-  '&:hover': {
-    transform: 'scale(1.05)',
-    boxShadow: '0 0 25px rgba(0, 0, 0, 0.2)',
-  }
+  border: '2px solid #FFFFFF',
+  boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.08)',
 }));
 
 export const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  background: theme.palette.primary.main,
-  boxShadow: '0 3px 5px rgba(0, 0, 0, 0.1)',
+  backgroundColor: '#FFFFFF',
+  color: '#000000',
+  boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.08)',
+  '& .MuiToolbar-root': {
+    minHeight: '52px',
+    padding: theme.spacing(0, 3),
+  },
+  '& .MuiButton-root': {
+    color: 'rgba(0, 0, 0, 0.6)',
+    '&:hover': {
+      color: 'rgba(0, 0, 0, 0.9)',
+      backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    }
+  }
+}));
+
+export const ContentCard = styled(Card)(({ theme }) => ({
+  borderRadius: 8,
+  padding: theme.spacing(2),
+  backgroundColor: '#FFFFFF',
+  border: '1px solid rgba(0, 0, 0, 0.08)',
+  boxShadow: 'none',
+  '&:hover': {
+    boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.08)',
+  }
+}));
+
+export const ActionButton = styled(Button)(({ theme }) => ({
+  borderRadius: 16,
+  padding: theme.spacing(1, 3),
+  fontWeight: 600,
+  textTransform: 'none',
+  boxShadow: 'none',
+  '&.MuiButton-contained': {
+    backgroundColor: '#0A66C2',
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#004182',
+    }
+  },
+  '&.MuiButton-outlined': {
+    borderColor: 'rgba(0, 0, 0, 0.6)',
+    color: 'rgba(0, 0, 0, 0.6)',
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.04)',
+      borderColor: 'rgba(0, 0, 0, 0.9)',
+    }
+  },
+  '&.MuiButton-text': {
+    color: 'rgba(0, 0, 0, 0.6)',
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.04)',
+      color: 'rgba(0, 0, 0, 0.9)',
+    }
+  }
+}));
+
+// Additional Styles
+export const PostCard = styled(Card)(({ theme }) => ({
+  borderRadius: 8,
+  padding: theme.spacing(2),
+  backgroundColor: '#FFFFFF',
+  border: '1px solid rgba(0, 0, 0, 0.08)',
+  boxShadow: 'none',
+  marginBottom: theme.spacing(2),
+}));
+
+export const IconButton = styled(Button)(({ theme }) => ({
+  color: 'rgba(0, 0, 0, 0.6)',
+  textTransform: 'none',
+  padding: theme.spacing(1),
+  borderRadius: 4,
+  '&:hover': {
+    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    color: 'rgba(0, 0, 0, 0.9)',
+  }
 }));
