@@ -4,18 +4,22 @@ export const theme = createTheme({
   direction: 'rtl',
   palette: {
     primary: {
-      main: '#2196f3',
-      light: '#64b5f6',
-      dark: '#1976d2',
+      main: '#D32F2F',      // أحمر
+      light: '#EF5350',     // أحمر فاتح
+      dark: '#B71C1C',      // أحمر غامق
     },
     secondary: {
-      main: '#ff4081',
-      light: '#ff79b0',
-      dark: '#c60055',
+      main: '#2E7D32',      // أخضر
+      light: '#4CAF50',     // أخضر فاتح
+      dark: '#1B5E20',      // أخضر غامق
     },
     background: {
-      default: '#f5f5f5',
-      paper: '#ffffff',
+      default: '#FFFFFF',   // أبيض للخلفية
+      paper: '#FFFFFF',     // أبيض للبطاقات
+    },
+    text: {
+      primary: '#1A1A1A',   // أسود للنصوص
+      secondary: '#666666', // رمادي للنصوص الثانوية
     }
   },
   typography: {
@@ -23,9 +27,7 @@ export const theme = createTheme({
     h4: {
       fontWeight: 600,
       fontSize: '2rem',
-      background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
+      color: '#D32F2F',
     }
   },
   components: {
@@ -37,11 +39,9 @@ export const theme = createTheme({
           transition: 'all 0.3s ease-in-out',
           '&:hover': {
             transform: 'translateY(-2px)',
-            boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
           },
         },
         contained: {
-          background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
           color: 'white',
         }
       }
@@ -51,17 +51,10 @@ export const theme = createTheme({
         root: {
           borderRadius: 16,
           transition: 'all 0.3s ease-in-out',
+          border: '1px solid #E0E0E0',
           '&:hover': {
             transform: 'translateY(-5px)',
-            boxShadow: '0 8px 20px rgba(0,0,0,0.12)',
           }
-        }
-      }
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          borderRadius: 16,
         }
       }
     }

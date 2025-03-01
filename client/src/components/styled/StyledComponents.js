@@ -4,60 +4,82 @@ import { Typography, Button, Card, Avatar, AppBar, Paper } from '@mui/material';
 export const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: 16,
-  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+  backgroundColor: '#FFFFFF',
+  border: '1px solid #E0E0E0',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
   transition: 'transform 0.3s ease-in-out',
   '&:hover': {
     transform: 'translateY(-5px)',
   }
 }));
 
-export const AnimatedButton = styled(Button)(({ theme }) => ({
+export const RedButton = styled(Button)(({ theme }) => ({
   height: '200px',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
   gap: theme.spacing(2),
-  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+  background: theme.palette.primary.main,
   color: 'white',
   borderRadius: 16,
   transition: 'all 0.3s ease-in-out',
   '&:hover': {
     transform: 'scale(1.05)',
-    boxShadow: '0 10px 20px rgba(33, 150, 243, 0.3)',
+    background: theme.palette.primary.dark,
+    boxShadow: '0 10px 20px rgba(211, 47, 47, 0.2)',
   }
 }));
 
-export const StyledCard = styled(Card)(({ theme }) => ({
+export const GreenButton = styled(Button)(({ theme }) => ({
+  height: '200px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: theme.spacing(2),
+  background: theme.palette.secondary.main,
+  color: 'white',
   borderRadius: 16,
-  overflow: 'hidden',
   transition: 'all 0.3s ease-in-out',
   '&:hover': {
-    transform: 'translateY(-10px)',
-    boxShadow: '0 12px 24px rgba(0,0,0,0.15)',
+    transform: 'scale(1.05)',
+    background: theme.palette.secondary.dark,
+    boxShadow: '0 10px 20px rgba(46, 125, 50, 0.2)',
+  }
+}));
+
+export const GradientTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.main,
+  fontWeight: 'bold',
+  textAlign: 'center',
+  position: 'relative',
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    bottom: -8,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 60,
+    height: 3,
+    background: theme.palette.primary.main,
+    borderRadius: 2
   }
 }));
 
 export const StyledAvatar = styled(Avatar)(({ theme }) => ({
   width: 150,
   height: 150,
-  border: '4px solid white',
-  boxShadow: '0 0 20px rgba(33, 150, 243, 0.3)',
+  border: '4px solid #FFFFFF',
+  boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)',
   transition: 'all 0.3s ease',
   '&:hover': {
     transform: 'scale(1.05)',
-    boxShadow: '0 0 25px rgba(33, 150, 243, 0.5)',
+    boxShadow: '0 0 25px rgba(0, 0, 0, 0.2)',
   }
 }));
 
-export const GradientTypography = styled(Typography)(({ theme }) => ({
-  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
-  WebkitBackgroundClip: 'text',
-  WebkitTextFillColor: 'transparent',
-  fontWeight: 'bold',
-}));
-
 export const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
-  boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+  background: theme.palette.primary.main,
+  boxShadow: '0 3px 5px rgba(0, 0, 0, 0.1)',
 }));
