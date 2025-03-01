@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { StyledPaper, AnimatedButton, GradientTypography } from '../styled/StyledComponents';
 import {
     Container,
     Paper,
@@ -16,40 +17,37 @@ const Teams = () => {
 
     return (
         <Container maxWidth="md">
-            <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
-                <Typography variant="h4" align="center" gutterBottom>
-                    مرحباً بك في صفحة الفرق
-                </Typography>
-                
-                <Grid container spacing={4} sx={{ mt: 4 }}>
-                    <Grid item xs={12} md={6}>
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            size="large"
-                            startIcon={<AddIcon />}
-                            onClick={() => navigate('/teams/create')}
-                            sx={{ height: '150px' }}
-                        >
-                            إنشاء فريق جديد
-                        </Button>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <Button
-                            fullWidth
-                            variant="outlined"
-                            size="large"
-                            startIcon={<SearchIcon />}
-                            onClick={() => navigate('/teams/search')}
-                            sx={{ height: '150px' }}
-                        >
-                            البحث عن فريق
-                        </Button>
-                    </Grid>
-                </Grid>
-            </Paper>
+          <StyledPaper>
+            <GradientTypography variant="h4" align="center" gutterBottom>
+              مرحباً بك في صفحة الفرق
+            </GradientTypography>
+            
+            <Grid container spacing={4} sx={{ mt: 4 }}>
+              <Grid item xs={12} md={6}>
+                <AnimatedButton
+                  fullWidth
+                  onClick={() => navigate('/teams/create')}
+                >
+                  <AddIcon sx={{ fontSize: 40 }} />
+                  <Typography variant="h6">إنشاء فريق جديد</Typography>
+                </AnimatedButton>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <AnimatedButton
+                  fullWidth
+                  onClick={() => navigate('/teams/search')}
+                  sx={{
+                    background: 'linear-gradient(45deg, #ff4081 30%, #ff79b0 90%)',
+                  }}
+                >
+                  <SearchIcon sx={{ fontSize: 40 }} />
+                  <Typography variant="h6">البحث عن فريق</Typography>
+                </AnimatedButton>
+              </Grid>
+            </Grid>
+          </StyledPaper>
         </Container>
-    );
+      );
 };
 
 export default Teams;

@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Box, CssBaseline } from '@mui/material';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { theme } from './theme/theme';
+import { ThemeProvider } from '@mui/material/styles';
 
 // Layout Components
 import Navbar from './components/layout/Navbar';
@@ -23,16 +24,6 @@ import MyTeam from './components/teams/MyTeam';
 import ManageRequests from './components/teams/ManageRequests';
 
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-
-// RTL theme configuration
-const theme = createTheme({
-  direction: 'rtl',
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-  },
-});
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
