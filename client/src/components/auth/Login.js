@@ -25,7 +25,7 @@ const Login = () => {
         try {
             const response = await api.post('/auth/login', formData);
             login(response.data.user, response.data.token);
-            navigate('/profile');
+            navigate('/teams');
         } catch (err) {
             setError(err.response?.data?.message || 'حدث خطأ في تسجيل الدخول');
         }

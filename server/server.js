@@ -1,34 +1,41 @@
-// 1. استيراد المكتبات المطلوبة
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
-// 2. إنشاء التطبيق باستخدام Express
 const app = express();
+
+// Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
 
-// 3. الاتصال بقاعدة البيانات MongoDB
+// Static files setup
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Create uploads directory if it doesn't exist
+const fs = require('fs');
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir);
+}
+
+// MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
 
-// 4. استيراد جميع الراوتات
+// Routes
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const teamRoutes = require("./routes/teamRoutes"); // إضافة راوتر الفرق
 
-// 5. استخدام الراوتات
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
+app.use('/teams', teamRoutes); // إضافة مسار الفرق
 
-// 6. إعداد المسارات الأساسية
-app.get('/', (req, res) => {
-    res.send('Welcome to Team Project API');
-});
-
-// 7. معالجة الأخطاء العامة
+// Error handling
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ 
@@ -37,12 +44,5 @@ app.use((err, req, res, next) => {
     });
 });
 
-// 8. معالجة المسارات غير الموجودة
-app.use((req, res) => {
-    res.status(404).json({ message: "المسار غير موجود" });
-});
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-// 9. تشغيل السيرفر
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

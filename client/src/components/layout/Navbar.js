@@ -1,159 +1,121 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import {
     AppBar,
-    Box,
     Toolbar,
-    IconButton,
     Typography,
-    Menu,
-    Container,
-    Avatar,
     Button,
-    Tooltip,
+    Box,
+    IconButton,
+    Menu,
     MenuItem
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 
 const Navbar = () => {
+    const { isAuthenticated, logout } = useAuth();
     const navigate = useNavigate();
-    const { user, logout, isAuthenticated } = useAuth();
-    const [anchorElNav, setAnchorElNav] = useState(null);
-    const [anchorElUser, setAnchorElUser] = useState(null);
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
-    };
-    
-    const handleOpenUserMenu = (event) => {
-        setAnchorElUser(event.currentTarget);
+    const handleMenu = (event) => {
+        setAnchorEl(event.currentTarget);
     };
 
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
+    const handleClose = () => {
+        setAnchorEl(null);
     };
 
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
-    };
-
-    const handleMenuClick = (path) => {
-        navigate(path);
-        handleCloseNavMenu();
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
     };
 
     return (
         <AppBar position="static" dir="rtl">
-            <Container maxWidth="xl">
-                <Toolbar disableGutters>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        sx={{
-                            flexGrow: 1,
-                            display: { xs: 'none', md: 'flex' },
-                            cursor: 'pointer'
-                        }}
-                        onClick={() => navigate('/')}
-                    >
-                        مشروع التعارف الجامعي
-                    </Typography>
+            <Toolbar>
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    نظام الفرق
+                </Typography>
 
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                {isAuthenticated ? (
+                    <>
+                        <Button 
+                            color="inherit" 
+                            component={Link} 
+                            to="/teams"
+                            sx={{ mx: 1 }}
+                        >
+                            الفرق
+                        </Button>
+                        <Button 
+                            color="inherit" 
+                            component={Link} 
+                            to="/teams/search"
+                            sx={{ mx: 1 }}
+                        >
+                            البحث عن فريق
+                        </Button>
+                        <Button 
+                            color="inherit" 
+                            component={Link} 
+                            to="/teams/requests"
+                            sx={{ mx: 1 }}
+                        >
+                            طلبات الانضمام
+                        </Button>
+                        <Button 
+    color="inherit" 
+    component={Link} 
+    to="/teams/my-team"
+    sx={{ mx: 1 }}
+>
+    فريقي
+</Button>
                         <IconButton
                             size="large"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
+                            onClick={handleMenu}
                             color="inherit"
                         >
-                            <MenuIcon />
+                            <AccountCircle />
                         </IconButton>
                         <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
-                            sx={{
-                                display: { xs: 'block', md: 'none' },
-                            }}
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleClose}
                         >
-                            {!isAuthenticated() ? (
-                                [
-                                    <MenuItem key="login" onClick={() => handleMenuClick('/login')}>
-                                        تسجيل الدخول
-                                    </MenuItem>,
-                                    <MenuItem key="register" onClick={() => handleMenuClick('/register')}>
-                                        إنشاء حساب
-                                    </MenuItem>
-                                ]
-                            ) : (
-                                <MenuItem onClick={() => handleMenuClick('/profile')}>
-                                    الملف الشخصي
-                                </MenuItem>
-                            )}
+                            <MenuItem 
+                                onClick={() => {
+                                    handleClose();
+                                    navigate('/profile');
+                                }}
+                            >
+                                الملف الشخصي
+                            </MenuItem>
+                            <MenuItem onClick={handleLogout}>تسجيل خروج</MenuItem>
                         </Menu>
-                    </Box>
-
-                    {isAuthenticated() ? (
-                        <Box sx={{ flexGrow: 0 }}>
-                            <Tooltip title="الإعدادات">
-                                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                    <Avatar alt={user?.name} src={user?.image} />
-                                </IconButton>
-                            </Tooltip>
-                            <Menu
-                                sx={{ mt: '45px' }}
-                                id="menu-appbar"
-                                anchorEl={anchorElUser}
-                                anchorOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'left',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'left',
-                                }}
-                                open={Boolean(anchorElUser)}
-                                onClose={handleCloseUserMenu}
-                            >
-                                <MenuItem onClick={() => handleMenuClick('/profile')}>
-                                    الملف الشخصي
-                                </MenuItem>
-                                <MenuItem onClick={logout}>
-                                    تسجيل الخروج
-                                </MenuItem>
-                            </Menu>
-                        </Box>
-                    ) : (
-                        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                            <Button
-                                onClick={() => navigate('/login')}
-                                sx={{ color: 'white', mx: 1 }}
-                            >
-                                تسجيل الدخول
-                            </Button>
-                            <Button
-                                onClick={() => navigate('/register')}
-                                sx={{ color: 'white', mx: 1 }}
-                            >
-                                إنشاء حساب
-                            </Button>
-                        </Box>
-                    )}
-                </Toolbar>
-            </Container>
+                    </>
+                ) : (
+                    <>
+                    
+                        <Button 
+                            color="inherit" 
+                            component={Link} 
+                            to="/login"
+                        >
+                            تسجيل دخول
+                        </Button>
+                        <Button 
+                            color="inherit" 
+                            component={Link} 
+                            to="/register"
+                        >
+                            تسجيل جديد
+                        </Button>
+                        
+                    </>
+                )}
+            </Toolbar>
         </AppBar>
     );
 };
