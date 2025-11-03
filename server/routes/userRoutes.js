@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const upload = require('../middleware/upload');
-const User = require('../models/user');
+const User = require('../models/User');
 
 router.get('/profile', auth, async (req, res) => {
     try {
