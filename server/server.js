@@ -9,7 +9,7 @@ const app = express();
 // Middleware
 const allowedOrigins = [
     'http://localhost:3000',
-    'https://blindproject.vercel.app', // هنحدثه بعد رفع Frontend
+    'https://blind-project.vercel.app', // Vercel Frontend URL
     process.env.FRONTEND_URL
 ].filter(Boolean);
 
@@ -23,7 +23,9 @@ app.use(cors({
             callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
