@@ -29,11 +29,21 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
-const teamRoutes = require("./routes/teamRoutes"); // إضافة راوتر الفرق
+const teamRoutes = require("./routes/teamRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
+const messageRoutes = require("./routes/messageRoutes");
+const ratingRoutes = require("./routes/ratingRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const searchRoutes = require("./routes/searchRoutes");
 
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
-app.use('/teams', teamRoutes); // إضافة مسار الفرق
+app.use('/teams', teamRoutes);
+app.use('/notifications', notificationRoutes);
+app.use('/messages', messageRoutes);
+app.use('/ratings', ratingRoutes);
+app.use('/admin', adminRoutes);
+app.use('/search', searchRoutes);
 
 // Error handling
 app.use((err, req, res, next) => {

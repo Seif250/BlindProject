@@ -20,7 +20,8 @@
     "start": "set SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
     "build": "set SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "patch-package"
   },
   "eslintConfig": {
     "extends": [
@@ -43,5 +44,8 @@
     "@babel/core": "^7.23.9",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "react-scripts/@babel/core": "^7.23.9"
+  },
+  "devDependencies": {
+    "patch-package": "^8.0.1"
   }
 }

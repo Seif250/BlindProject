@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Box, CssBaseline } from '@mui/material';
 import { theme } from './theme/theme';
 import { ThemeProvider } from '@mui/material/styles';
@@ -7,6 +7,7 @@ import { ThemeProvider } from '@mui/material/styles';
 // Layout Components
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import Home from './components/layout/Home';
 
 // Auth Components
 import Login from './components/auth/Login';
@@ -31,6 +32,22 @@ const ProtectedRoute = ({ children }) => {
   return isAuthenticated() ? children : <Navigate to="/login" />;
 };
 
+// Layout wrapper that shows/hides Navbar and Footer based on route
+const Layout = ({ children }) => {
+  const location = useLocation();
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+
+  return (
+    <>
+      {!isAuthPage && <Navbar />}
+      <Box component="main" sx={{ flexGrow: 1 }}>
+        {children}
+      </Box>
+      {!isAuthPage && <Footer />}
+    </>
+  );
+};
+
 function App() {
   return (
     <Router>
@@ -38,11 +55,10 @@ function App() {
         <CssBaseline />
         <AuthProvider>
           <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <Navbar />
-            <Box component="main" sx={{ flexGrow: 1, py: 3 }}>
+            <Layout>
               <Routes>
                 {/* Public Routes */}
-                <Route path="/" element={<Navigate to="/login" />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
@@ -57,8 +73,7 @@ function App() {
                 <Route path="/teams/my-team" element={<ProtectedRoute><MyTeam /></ProtectedRoute>} />
                 <Route path="/teams/requests" element={<ProtectedRoute><ManageRequests /></ProtectedRoute>} />
               </Routes>
-            </Box>
-            <Footer />
+            </Layout>
           </Box>
         </AuthProvider>
       </ThemeProvider>

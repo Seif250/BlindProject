@@ -1,0 +1,11 @@
+diff --git a/node_modules/stylis-plugin-rtl/dist/stylis-rtl.js b/node_modules/stylis-plugin-rtl/dist/stylis-rtl.js
+index 513e600..99a9678 100644
+--- a/node_modules/stylis-plugin-rtl/dist/stylis-rtl.js
++++ b/node_modules/stylis-plugin-rtl/dist/stylis-rtl.js
+@@ -32,4 +32,3 @@ function stylisRTLPlugin(element, index, children, callback) {
+ // is unused
+ Object.defineProperty(stylisRTLPlugin, 'name', { value: 'stylisRTLPlugin' });
+ export default stylisRTLPlugin;
+\ No newline at end of file
+-//# sourceMappingURL=stylis-rtl.js.map
+\ No newline at end of file

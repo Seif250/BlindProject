@@ -1,18 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    Container, Paper, Typography, Box, Grid, 
-    Avatar, Chip, Divider, Button, Alert,
-    List, ListItem, ListItemAvatar, ListItemText,
-    IconButton, Tooltip
+    Container,
+    Typography,
+    Box,
+    Grid,
+    Avatar,
+    Button,
+    Alert,
+    Stack,
+    Divider
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import GroupIcon from '@mui/icons-material/Group';
 import PersonIcon from '@mui/icons-material/Person';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
-import PendingIcon from '@mui/icons-material/Pending';
 import api from '../../services/api';
+import {
+    PageWrapper,
+    PageHeader,
+    PageTitle,
+    PageSubtitle,
+    SectionCard,
+    SectionTitle,
+    HelperText,
+    AccentBadge,
+    InfoChip
+} from '../styled/StyledComponents';
+
+const MemberCard = styled(Box)(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: theme.spacing(2),
+    padding: theme.spacing(2),
+    borderRadius: 18,
+    border: '1px solid rgba(15, 23, 42, 0.08)',
+    backgroundColor: 'rgba(15, 23, 42, 0.02)'
+}));
 
 const MyTeam = () => {
     const navigate = useNavigate();
@@ -49,188 +76,176 @@ const MyTeam = () => {
 
     if (!team) {
         return (
-            <Container maxWidth="md">
-                <Paper elevation={3} sx={{ p: 4, mt: 4, textAlign: 'center' }}>
-                    <Typography>لم يتم العثور على فريق خاص بك</Typography>
-                </Paper>
-            </Container>
+            <PageWrapper>
+                <Container maxWidth="md">
+                    <SectionCard sx={{ textAlign: 'center' }}>
+                        <SectionTitle variant="h6">لا يوجد فريق مسجل</SectionTitle>
+                        <HelperText>
+                            قم بإنشاء فريق جديد أو انضم لأحد الفرق من صفحة الاستكشاف لتظهر تفاصيل فريقك هنا.
+                        </HelperText>
+                    </SectionCard>
+                </Container>
+            </PageWrapper>
         );
     }
 
-    const acceptedMembers = team.members.filter(m => m.status === 'accepted');
-    const pendingMembers = team.members.filter(m => m.status === 'pending');
+    const acceptedMembers = (team.members || []).filter((member) => member.status === 'accepted');
+    const pendingMembers = (team.members || []).filter((member) => member.status === 'pending');
 
     return (
-        <Container maxWidth="lg">
-            <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
-                <Typography variant="h4" align="center" gutterBottom>
-                    فريقي: {team.projectName}
-                </Typography>
+        <PageWrapper>
+            <Container maxWidth="lg">
+                <PageHeader>
+                    <AccentBadge>لوحة الفريق</AccentBadge>
+                    <PageTitle>فريقي: {team.projectName}</PageTitle>
+                    <PageSubtitle>
+                        راجع تفاصيل مشروعك، تعرف على أعضاء فريقك، وتابع الطلبات المعلّقة في تجربة موحدة ومريحة.
+                    </PageSubtitle>
+                </PageHeader>
 
-                {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-                {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+                <Stack spacing={3}>
+                    {error && <Alert severity="error">{error}</Alert>}
+                    {success && <Alert severity="success">{success}</Alert>}
 
-                <Grid container spacing={4}>
-                    {/* تفاصيل المشروع */}
-                    <Grid item xs={12} md={6}>
-                        <Paper elevation={2} sx={{ p: 3 }}>
-                            <Typography variant="h6" gutterBottom>
-                                تفاصيل المشروع
-                            </Typography>
-                            <Typography color="text.secondary" paragraph>
-                                {team.description}
-                            </Typography>
-                            
-                            <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <GroupIcon />
-                                <Typography>
-                                    {acceptedMembers.length} / {team.maxMembers} عضو
-                                </Typography>
-                            </Box>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} md={4}>
+                            <Stack spacing={3}>
+                                <SectionCard>
+                                    <SectionTitle variant="h6">تفاصيل المشروع</SectionTitle>
+                                    <HelperText sx={{ mb: 2 }}>
+                                        {team.description || 'لم يتم إضافة وصف للمشروع بعد.'}
+                                    </HelperText>
+                                    <InfoChip label={`عدد الأعضاء: ${acceptedMembers.length} / ${team.maxMembers}`} sx={{ mb: 2 }} />
+                                    <Button
+                                        startIcon={<WhatsAppIcon />}
+                                        variant="outlined"
+                                        color="primary"
+                                        href={`https://wa.me/${team.whatsapp}`}
+                                        target="_blank"
+                                        rel="noopener"
+                                    >
+                                        تواصل عبر الواتساب
+                                    </Button>
+                                </SectionCard>
 
-                            <Button
-                                startIcon={<WhatsAppIcon />}
-                                variant="outlined"
-                                color="success"
-                                sx={{ mt: 2 }}
-                                href={`https://wa.me/${team.whatsapp}`}
-                                target="_blank"
-                            >
-                                تواصل عبر الواتساب
-                            </Button>
-                        </Paper>
-                    </Grid>
+                                <SectionCard>
+                                    <SectionTitle variant="h6">الأدوار المطلوبة</SectionTitle>
+                                    <Stack spacing={1.5}>
+                                        {team.roles.map((role, index) => {
+                                            const filled = acceptedMembers.some((member) => member.role === role.title);
+                                            return (
+                                                <MemberCard key={index} sx={{ backgroundColor: 'transparent' }}>
+                                                    <Box>
+                                                        <Typography sx={{ fontWeight: 600, color: '#0f172a' }}>
+                                                            {role.title}
+                                                        </Typography>
+                                                        <HelperText>{role.description}</HelperText>
+                                                    </Box>
+                                                    <InfoChip
+                                                        label={filled ? 'تم شغل الدور' : 'ما زال متاحاً'}
+                                                        sx={{ backgroundColor: filled ? 'rgba(5, 118, 66, 0.12)' : 'rgba(15, 23, 42, 0.06)', color: filled ? '#057642' : '#0f172a' }}
+                                                    />
+                                                </MemberCard>
+                                            );
+                                        })}
+                                    </Stack>
+                                </SectionCard>
+                            </Stack>
+                        </Grid>
 
-                    {/* الأدوار المطلوبة */}
-                    <Grid item xs={12} md={6}>
-                        <Paper elevation={2} sx={{ p: 3 }}>
-                            <Typography variant="h6" gutterBottom>
-                                الأدوار المطلوبة
-                            </Typography>
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                {team.roles.map((role, index) => (
-                                    <Tooltip key={index} title={role.description}>
-                                        <Chip
-                                            label={role.title}
-                                            variant="outlined"
-                                            color={acceptedMembers.some(m => m.role === role.title) ? "success" : "primary"}
-                                        />
-                                    </Tooltip>
-                                ))}
-                            </Box>
-                        </Paper>
-                    </Grid>
+                        <Grid item xs={12} md={8}>
+                            <SectionCard>
+                                <SectionTitle variant="h6">أعضاء الفريق</SectionTitle>
+                                {acceptedMembers.length === 0 ? (
+                                    <HelperText>لم يتم قبول أي أعضاء بعد.</HelperText>
+                                ) : (
+                                    <Stack spacing={2}>
+                                        {acceptedMembers.map((member) => (
+                                            <MemberCard key={member.user._id}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                    <Avatar
+                                                        src={member.user.image}
+                                                        onClick={() => navigate(`/profile/${member.user._id}`)}
+                                                        sx={{ cursor: 'pointer' }}
+                                                    >
+                                                        <PersonIcon />
+                                                    </Avatar>
+                                                    <Box sx={{ textAlign: 'right' }}>
+                                                        <Typography sx={{ fontWeight: 600, color: '#0f172a' }}>
+                                                            {member.user.name}
+                                                        </Typography>
+                                                        <HelperText>{member.user.email}</HelperText>
+                                                        {member.user.whatsapp && (
+                                                            <Button
+                                                                startIcon={<WhatsAppIcon />}
+                                                                variant="text"
+                                                                color="primary"
+                                                                href={`https://wa.me/${member.user.whatsapp}`}
+                                                                target="_blank"
+                                                                rel="noopener"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                                sx={{ mt: 1 }}
+                                                            >
+                                                                {member.user.whatsapp}
+                                                            </Button>
+                                                        )}
+                                                    </Box>
+                                                </Box>
+                                                <InfoChip label={member.role} />
+                                            </MemberCard>
+                                        ))}
+                                    </Stack>
+                                )}
+                            </SectionCard>
 
-                    {/* الأعضاء المقبولين */}
-                    <Grid item xs={12}>
-                        <Paper elevation={2} sx={{ p: 3 }}>
-                            <Typography variant="h6" gutterBottom>
-                                أعضاء الفريق
-                            </Typography>
-                            <List>
-    {acceptedMembers.map((member) => (
-        <ListItem
-            key={member.user._id}
-            sx={{
-                cursor: 'pointer',
-                '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.04)' }
-            }}
-        >
-            <ListItemAvatar>
-                <Avatar 
-                    src={member.user.image}
-                    onClick={() => navigate(`/profile/${member.user._id}`)}
-                    sx={{ cursor: 'pointer' }}
-                >
-                    <PersonIcon />
-                </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-                primary={member.user.name}
-                secondary={
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                        <Typography variant="body2">{member.user.email}</Typography>
-                        <Button
-                            startIcon={<WhatsAppIcon />}
-                            variant="outlined"
-                            size="small"
-                            color="success"
-                            href={`https://wa.me/${member.user.whatsapp}`}
-                            target="_blank"
-                            onClick={(e) => e.stopPropagation()}
-                            sx={{ width: 'fit-content' }}
-                        >
-                            {member.user.whatsapp}
-                        </Button>
-                    </Box>
-                }
-            />
-            <Chip 
-                label={member.role} 
-                color="success" 
-                sx={{ ml: 2 }}
-            />
-        </ListItem>
-    ))}
-</List>
-                        </Paper>
-                    </Grid>
-
-                    {/* طلبات الانضمام */}
-                    {pendingMembers.length > 0 && (
-                        <Grid item xs={12}>
-                            <Paper elevation={2} sx={{ p: 3 }}>
-                                <Typography variant="h6" gutterBottom>
-                                    طلبات الانضمام
-                                </Typography>
-                                <List>
-                                    {pendingMembers.map((member) => (
-                                        <ListItem
-                                            key={member.user._id}
-                                            secondaryAction={
-                                                <Box>
-                                                    <IconButton
-                                                        color="success"
+                            {pendingMembers.length > 0 && (
+                                <SectionCard sx={{ mt: 3 }}>
+                                    <SectionTitle variant="h6">طلبات الانضمام</SectionTitle>
+                                    <Stack spacing={2}
+                                        divider={<Divider flexItem sx={{ borderColor: 'rgba(15, 23, 42, 0.06)' }} />}
+                                    >
+                                        {pendingMembers.map((member) => (
+                                            <MemberCard key={member.user._id} sx={{ border: 'none', backgroundColor: 'transparent', padding: 0 }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                    <Avatar src={member.user.image}>
+                                                        <PersonIcon />
+                                                    </Avatar>
+                                                    <Box sx={{ textAlign: 'right' }}>
+                                                        <Typography sx={{ fontWeight: 600, color: '#0f172a' }}>
+                                                            {member.user.name}
+                                                        </Typography>
+                                                        <HelperText>{member.user.email}</HelperText>
+                                                        <InfoChip label={`الدور المطلوب: ${member.role}`} sx={{ mt: 1 }} />
+                                                    </Box>
+                                                </Box>
+                                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="primary"
+                                                        startIcon={<CheckCircleIcon />}
                                                         onClick={() => handleStatusChange(member.user._id, 'accepted')}
                                                     >
-                                                        <CheckCircleIcon />
-                                                    </IconButton>
-                                                    <IconButton
+                                                        قبول
+                                                    </Button>
+                                                    <Button
+                                                        variant="outlined"
                                                         color="error"
+                                                        startIcon={<CancelIcon />}
                                                         onClick={() => handleStatusChange(member.user._id, 'rejected')}
                                                     >
-                                                        <CancelIcon />
-                                                    </IconButton>
-                                                </Box>
-                                            }
-                                        >
-                                            <ListItemAvatar>
-                                                <Avatar src={member.user.image}>
-                                                    <PersonIcon />
-                                                </Avatar>
-                                            </ListItemAvatar>
-                                            <ListItemText
-                                                primary={member.user.name}
-                                                secondary={
-                                                    <>
-                                                        {member.user.email}
-                                                        <Chip
-                                                            size="small"
-                                                            label={`الدور المطلوب: ${member.role}`}
-                                                            sx={{ ml: 1 }}
-                                                        />
-                                                    </>
-                                                }
-                                            />
-                                        </ListItem>
-                                    ))}
-                                </List>
-                            </Paper>
+                                                        رفض
+                                                    </Button>
+                                                </Stack>
+                                            </MemberCard>
+                                        ))}
+                                    </Stack>
+                                </SectionCard>
+                            )}
                         </Grid>
-                    )}
-                </Grid>
-            </Paper>
-        </Container>
+                    </Grid>
+                </Stack>
+            </Container>
+        </PageWrapper>
     );
 };
 

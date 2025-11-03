@@ -13,7 +13,8 @@ router.post('/create', auth, async (req, res) => {
         await team.save();
         res.status(201).json(team);
     } catch (error) {
-        res.status(500).json({ message: "حدث خطأ في إنشاء الفريق" });
+        console.error('Team creation error:', error);
+        res.status(500).json({ message: error.message || "حدث خطأ في إنشاء الفريق" });
     }
 });
 
@@ -21,8 +22,8 @@ router.post('/create', auth, async (req, res) => {
 router.get('/available', auth, async (req, res) => {
     try {
         const teams = await Team.find()
-            .populate('creator', 'name email')
-            .populate('members.user', 'name email');
+            .populate('creator', 'name email whatsapp image')
+            .populate('members.user', 'name email whatsapp image specialization year');
         res.json(teams);
     } catch (error) {
         res.status(500).json({ message: "حدث خطأ في جلب الفرق" });
@@ -33,8 +34,8 @@ router.get('/available', auth, async (req, res) => {
 router.get('/created', auth, async (req, res) => {
     try {
         const teams = await Team.find({ creator: req.user.userId })
-            .populate('creator', 'name email image')
-            .populate('members.user', 'name email image');
+            .populate('creator', 'name email whatsapp image')
+            .populate('members.user', 'name email whatsapp image specialization year');
         res.json(teams);
     } catch (error) {
         res.status(500).json({ message: "حدث خطأ في جلب الفرق" });
@@ -105,8 +106,8 @@ router.get('/myteam', auth, async (req, res) => {
                 { 'members.user': req.user.userId, 'members.status': 'accepted' }
             ]
         })
-        .populate('creator', 'name email image')
-        .populate('members.user', 'name email image');
+        .populate('creator', 'name email whatsapp image')
+        .populate('members.user', 'name email whatsapp image specialization year');
 
         if (!team) {
             return res.status(404).json({ message: "لم يتم العثور على فريق" });

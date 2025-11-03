@@ -1,5 +1,5 @@
 import { styled } from '@mui/material/styles';
-import { Typography, Button, Card, Avatar, AppBar, Paper } from '@mui/material';
+import { Typography, Button, Card, Avatar, AppBar, Paper, Box, Chip } from '@mui/material';
 
 export const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -149,4 +149,72 @@ export const IconButton = styled(Button)(({ theme }) => ({
     backgroundColor: 'rgba(0, 0, 0, 0.04)',
     color: 'rgba(0, 0, 0, 0.9)',
   }
+}));
+
+export const PageWrapper = styled(Box)(({ theme }) => ({
+  minHeight: '100vh',
+  padding: theme.spacing(8, 0, 10),
+  background: 'linear-gradient(180deg, #f6f7fb 0%, #eaecf3 100%)',
+}));
+
+export const PageHeader = styled(Box)(({ theme }) => ({
+  direction: 'rtl',
+  textAlign: 'right',
+  marginBottom: theme.spacing(5),
+}));
+
+export const PageTitle = styled(Typography)(({ theme }) => ({
+  fontWeight: 700,
+  fontSize: '2rem',
+  color: '#0f172a',
+}));
+
+export const PageSubtitle = styled(Typography)(({ theme }) => ({
+  color: '#475569',
+  maxWidth: 640,
+  marginTop: theme.spacing(1.5),
+  fontSize: '1rem',
+  lineHeight: 1.7,
+}));
+
+export const SectionCard = styled(Paper)(({ theme }) => ({
+  borderRadius: 20,
+  padding: theme.spacing(3.5),
+  backgroundColor: '#ffffff',
+  border: '1px solid rgba(15, 23, 42, 0.06)',
+  boxShadow: '0 30px 60px rgba(15, 23, 42, 0.05)',
+}));
+
+export const SectionTitle = styled(Typography)(({ theme }) => ({
+  fontWeight: 600,
+  color: '#0f172a',
+  marginBottom: theme.spacing(2.5),
+}));
+
+export const HelperText = styled(Typography)(({ theme }) => ({
+  color: '#64748b',
+  fontSize: '0.95rem',
+}));
+
+export const InfoChip = styled(Chip)(({ theme }) => ({
+  borderRadius: 10,
+  backgroundColor: 'rgba(15, 23, 42, 0.06)',
+  color: '#0f172a',
+  fontWeight: 500,
+  height: 28,
+  '& .MuiChip-label': {
+    padding: theme.spacing(0, 1.5),
+  },
+}));
+
+export const AccentBadge = styled(Box)(({ theme }) => ({
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: theme.spacing(0.5, 1.5),
+  borderRadius: 999,
+  backgroundColor: 'rgba(10, 102, 194, 0.1)',
+  color: '#0A66C2',
+  fontSize: '0.9rem',
+  fontWeight: 600,
 }));
