@@ -3,65 +3,75 @@ import { Container, Box, Typography, Grid, Card, CardContent, Button, Chip, Aler
 import { Group, Person } from '@mui/icons-material';
 import api from '../../services/api';
 
+const normalizeTeam = (team) => {
+    if (!team || typeof team !== 'object') {
+        return null;
+    }
+
+    const membersArray = Array.isArray(team.members) ? team.members : [];
+    const acceptedMembers = membersArray.filter(member => (member.status || 'accepted') === 'accepted');
+
+    const maxMembers = team.maxMembers ?? team.memberLimit ?? acceptedMembers.length ?? membersArray.length ?? 0;
+    const currentMembers = team.currentMembers ?? team.currentMembersCount ?? acceptedMembers.length ?? membersArray.length ?? 0;
+
+    return {
+        ...team,
+        _id: team._id || team.id,
+        name: team.name || team.projectName || team.title || 'Untitled Team',
+        subject: team.subject || team.category || 'General',
+        description: team.description || team.projectDescription || '',
+        maxMembers,
+        currentMembers,
+        isFull: team.isFull ?? currentMembers >= maxMembers,
+        creator: team.creator || team.owner || null,
+        members: acceptedMembers.length ? acceptedMembers : membersArray
+    };
+};
+
 const SearchTeams = () => {
     const [teams, setTeams] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
-    useEffect(() => { fetchTeams(); }, []);
+    useEffect(() => {
+        let isMounted = true;
 
-    const normalizeTeam = (team) => {
-        if (!team || typeof team !== 'object') {
-            return null;
-        }
+        const fetchTeams = async () => {
+            try {
+                const res = await api.get('/api/search/teams');
+                const rawTeams = Array.isArray(res.data)
+                    ? res.data
+                    : res.data?.teams
+                        ? res.data.teams
+                        : [];
 
-        const acceptedMembers = Array.isArray(team.members)
-            ? team.members.filter(member => (member.status || 'accepted') === 'accepted')
-            : [];
+                const normalizedTeams = rawTeams
+                    .map(normalizeTeam)
+                    .filter(Boolean)
+                    .filter(team => !team.isFull);
 
-        return {
-            ...team,
-            _id: team._id || team.id,
-            name: team.name || team.projectName || team.title || 'Untitled Team',
-            subject: team.subject || team.category || 'General',
-            description: team.description || team.projectDescription || '',
-            maxMembers: team.maxMembers || team.capacity || team.memberLimit || 0,
-            currentMembers: team.currentMembers !== undefined
-                ? team.currentMembers
-                : team.currentMembersCount !== undefined
-                    ? team.currentMembersCount
-                    : acceptedMembers.length,
-            isFull: team.isFull !== undefined
-                ? team.isFull
-                : acceptedMembers.length >= (team.maxMembers || 0),
-            creator: team.creator || team.owner || null,
-            members: acceptedMembers.length ? acceptedMembers : team.members || []
+                if (isMounted) {
+                    setTeams(normalizedTeams);
+                }
+            } catch (err) {
+                console.error('Search teams error:', err);
+                if (isMounted) {
+                    setError(err.response?.data?.message || 'Failed to load teams');
+                }
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
         };
-    };
 
-    const fetchTeams = async () => {
-        try {
-            const res = await api.get('/api/search/teams');
-            const rawTeams = Array.isArray(res.data)
-                ? res.data
-                : res.data?.teams
-                    ? res.data.teams
-                    : [];
+        fetchTeams();
 
-            const normalizedTeams = rawTeams
-                .map(normalizeTeam)
-                .filter(Boolean)
-                .filter(team => !team.isFull);
-
-            setTeams(normalizedTeams);
-        } catch (err) {
-            console.error('Search teams error:', err);
-            setError(err.response?.data?.message || 'Failed to load teams');
-        } finally {
-            setLoading(false);
-        }
-    };
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     const handleJoin = async (teamId) => {
         try {
