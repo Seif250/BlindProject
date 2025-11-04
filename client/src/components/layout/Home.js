@@ -8,8 +8,7 @@ import {
   Typography,
   Button,
   Card,
-  CardContent,
-  alpha
+  CardContent
 } from '@mui/material';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import GroupsIcon from '@mui/icons-material/Groups';

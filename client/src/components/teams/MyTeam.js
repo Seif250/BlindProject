@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Box, Typography, Card, CardContent, List, ListItem, ListItemText, Chip, Button, Alert, CircularProgress, Avatar, IconButton } from '@mui/material';
 import { Group, ExitToApp, Delete } from '@mui/icons-material';
 import api from '../../services/api';

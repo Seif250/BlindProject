@@ -102,7 +102,7 @@ const Login = () => {
                                 boxShadow: '0 10px 30px rgba(102, 126, 234, 0.4)'
                             }}
                         >
-                            🎓
+                            ðŸŽ“
                         </Box>
                         <Typography 
                             component="h1" 
@@ -271,7 +271,7 @@ const Login = () => {
 
                         <Box sx={{ textAlign: 'center' }}>
                             <Typography variant="body2" color="text.secondary">
-                                Don’t have an account yet?{' '}
+                                Donâ€™t have an account yet?{' '}
                                 <Link
                                     component={RouterLink}
                                     to="/register"
@@ -302,7 +302,7 @@ const Login = () => {
                                     }
                                 }}
                             >
-                                ← Back to homepage
+                                â† Back to homepage
                             </Link>
                         </Box>
                     </Box>

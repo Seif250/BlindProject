@@ -1,6 +1,6 @@
-﻿import React from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Box, Typography, Grid, Card, CardContent, Button } from '@mui/material';
+import { Container, Box, Typography, Grid, Card, CardContent } from '@mui/material';
 import { Add, Search, Group, ManageAccounts } from '@mui/icons-material';
 
 const Teams = () => {

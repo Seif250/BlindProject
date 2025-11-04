@@ -1,6 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
-import { Container, Box, Typography, Grid, Card, CardContent, Avatar, Chip, TextField, Button, Alert } from '@mui/material';
-import { Edit, Save, WhatsApp, School, Person } from '@mui/icons-material';
+import React, { useState, useEffect } from 'react';
+import { Container, Box, Typography, Grid, Card, CardContent, Avatar, TextField, Button, Alert } from '@mui/material';
+import { Edit, Save, WhatsApp, School } from '@mui/icons-material';
 import api from '../../services/api';
 
 const Profile = () => {

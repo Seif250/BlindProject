@@ -1,6 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Box, Typography, Grid, Card, CardContent, Avatar, Chip, CircularProgress, Alert } from '@mui/material';
+import { Container, Box, Typography, Grid, Card, CardContent, Avatar, CircularProgress, Alert } from '@mui/material';
 import { WhatsApp, School, Person, Email } from '@mui/icons-material';
 import api from '../../services/api';
 
@@ -10,18 +10,19 @@ const UserProfile = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    useEffect(() => { fetchUser(); }, [userId]);
-
-    const fetchUser = async () => {
-        try {
-            const res = await api.get(`/api/users/${userId}`);
-            setUser(res.data);
-        } catch (err) {
-            setError('Failed to load user profile');
-        } finally {
-            setLoading(false);
-        }
-    };
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const res = await api.get(`/api/users/${userId}`);
+                setUser(res.data);
+            } catch (err) {
+                setError('Failed to load user profile');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUser();
+    }, [userId]);
 
     if (loading) return <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(180deg, #050714 0%, #0a0f1e 100%)' }}><CircularProgress sx={{ color: '#7f5af0' }} /></Box>;
 

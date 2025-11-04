@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { TextField, Button, Container, Typography, Box, Alert, Link, MenuItem, InputAdornment, IconButton, Grid } from '@mui/material';
 import { Person, Email, Lock, School, Phone, Wc, Visibility, VisibilityOff, ArrowForward } from '@mui/icons-material';

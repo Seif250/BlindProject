@@ -1,5 +1,5 @@
-﻿import React, { useState, useEffect } from 'react';
-import { Container, Box, Typography, List, ListItem, ListItemText, Button, Alert, CircularProgress, Avatar, Chip } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Container, Box, Typography, List, ListItem, Button, Alert, CircularProgress, Avatar, Chip } from '@mui/material';
 import { Check, Close } from '@mui/icons-material';
 import api from '../../services/api';
 
