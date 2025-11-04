@@ -51,18 +51,18 @@ const ManageRequests = () => {
             const response = await api.get('/teams/created');
             setTeams(response.data);
         } catch (error) {
-            setError('فشل في تحميل الفرق');
+            setError('Failed to load your teams.');
         }
     };
 
     const handleRequest = async (teamId, userId, status) => {
         try {
             await api.patch(`/teams/member-status/${teamId}/${userId}`, { status });
-            setSuccess(`تم ${status === 'accepted' ? 'قبول' : 'رفض'} الطلب بنجاح`);
+            setSuccess(`Request ${status === 'accepted' ? 'approved' : 'declined'} successfully.`);
             setTimeout(() => setSuccess(''), 5000);
             fetchTeams();
         } catch (error) {
-            setError('فشل في تحديث حالة الطلب');
+            setError('Could not update the request status.');
             setTimeout(() => setError(''), 5000);
         }
     };
@@ -71,10 +71,10 @@ const ManageRequests = () => {
         <PageWrapper>
             <Container maxWidth="lg">
                 <PageHeader>
-                    <AccentBadge>إدارة الفريق</AccentBadge>
-                    <PageTitle>طلبات الانضمام</PageTitle>
+                    <AccentBadge>Team Management</AccentBadge>
+                    <PageTitle>Join Requests</PageTitle>
                     <PageSubtitle>
-                        تابع الطلبات الجديدة ورد عليها بسرعة من خلال واجهة موحدة تعرض تفاصيل كل طالب انضمام بوضوح.
+                        Keep an eye on new requests and respond instantly from one clear, glowing dashboard.
                     </PageSubtitle>
                 </PageHeader>
 
@@ -84,9 +84,9 @@ const ManageRequests = () => {
 
                     {teams.length === 0 && !error ? (
                         <SectionCard>
-                            <SectionTitle variant="h6">لا توجد فرق تمتلكها حالياً</SectionTitle>
+                            <SectionTitle variant="h6">No teams yet</SectionTitle>
                             <HelperText>
-                                بمجرد إنشاء فريق ستظهر طلبات الانضمام في هذه الصفحة بشكل منظم وسهل المتابعة.
+                                Create a team to start receiving join requests right here in a tidy list.
                             </HelperText>
                         </SectionCard>
                     ) : (
@@ -105,18 +105,18 @@ const ManageRequests = () => {
                                                     </HelperText>
                                                 )}
                                             </Box>
-                                            <InfoChip label={`أعضاء الفريق: ${(team.members || []).filter(m => m.status === 'accepted').length}/${team.maxMembers || '-'}`} />
+                                            <InfoChip label={`Team members: ${(team.members || []).filter(m => m.status === 'accepted').length}/${team.maxMembers || '-'}`} />
                                         </Box>
 
                                         <Divider sx={{ borderColor: 'rgba(15, 23, 42, 0.06)' }} />
 
                                         <SectionTitle variant="subtitle1" sx={{ mb: 0 }}>
-                                            طلبات الانضمام قيد الانتظار
+                                            Pending join requests
                                         </SectionTitle>
 
                                         {pendingMembers.length === 0 ? (
                                             <HelperText>
-                                                لا توجد طلبات معلّقة حالياً. سيتم إشعارك فور وصول طلب جديد.
+                                                No pending requests at the moment. We will notify you as soon as a new one arrives.
                                             </HelperText>
                                         ) : (
                                             <Stack spacing={2}>
@@ -124,12 +124,12 @@ const ManageRequests = () => {
                                                     <RequestRow key={member.user._id}>
                                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                                             <Avatar src={member.user.image} alt={member.user.name} />
-                                                            <Box sx={{ textAlign: 'right' }}>
+                                                            <Box sx={{ textAlign: 'left' }}>
                                                                 <Typography sx={{ fontWeight: 600, color: '#0f172a' }}>
                                                                     {member.user.name}
                                                                 </Typography>
                                                                 <HelperText>{member.user.email}</HelperText>
-                                                                <InfoChip label={`الدور المطلوب: ${member.role}`} sx={{ mt: 1 }} />
+                                                                <InfoChip label={`Requested role: ${member.role}`} sx={{ mt: 1 }} />
                                                             </Box>
                                                         </Box>
                                                         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
@@ -139,7 +139,7 @@ const ManageRequests = () => {
                                                                 startIcon={<CheckIcon />}
                                                                 onClick={() => handleRequest(team._id, member.user._id, 'accepted')}
                                                             >
-                                                                قبول
+                                                                Approve
                                                             </Button>
                                                             <Button
                                                                 variant="outlined"
@@ -147,7 +147,7 @@ const ManageRequests = () => {
                                                                 startIcon={<CloseIcon />}
                                                                 onClick={() => handleRequest(team._id, member.user._id, 'rejected')}
                                                             >
-                                                                رفض
+                                                                Decline
                                                             </Button>
                                                         </Stack>
                                                     </RequestRow>

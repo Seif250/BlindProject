@@ -63,12 +63,12 @@ const Register = () => {
         try {
             const response = await api.post('/auth/signup', formData);
             login(response.data.user, response.data.token);
-            setSuccess('تم إنشاء الحساب بنجاح! جاري التوجيه...');
+            setSuccess('Account created successfully! Redirecting...');
             setTimeout(() => {
                 navigate('/teams');
             }, 1000);
         } catch (err) {
-            setError(err.response?.data?.message || 'حدث خطأ في التسجيل');
+            setError(err.response?.data?.message || 'Something went wrong while signing up.');
             setTimeout(() => setError(''), 5000);
         } finally {
             setLoading(false);
@@ -127,10 +127,10 @@ const Register = () => {
                                 mb: 1
                             }}
                         >
-                            إنشاء حساب جديد
+                            Create a New Account
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            انضم إلينا الآن وابدأ رحلتك في عالم الفرق
+                            Join now and kick off your journey inside our glowing team universe.
                         </Typography>
                     </Box>
 
@@ -154,12 +154,11 @@ const Register = () => {
                                     required
                                     fullWidth
                                     id="name"
-                                    label="الاسم الكامل"
+                                    label="Full name"
                                     name="name"
                                     autoFocus
                                     value={formData.name}
                                     onChange={handleChange}
-                                    dir="rtl"
                                     InputProps={{
                                         startAdornment: (
                                             <InputAdornment position="start">
@@ -181,12 +180,11 @@ const Register = () => {
                                     required
                                     fullWidth
                                     id="email"
-                                    label="البريد الإلكتروني الجامعي"
+                                    label="University email"
                                     name="email"
                                     type="email"
                                     value={formData.email}
                                     onChange={handleChange}
-                                    dir="rtl"
                                     InputProps={{
                                         startAdornment: (
                                             <InputAdornment position="start">
@@ -208,12 +206,11 @@ const Register = () => {
                                     required
                                     fullWidth
                                     name="password"
-                                    label="كلمة المرور"
+                                    label="Password"
                                     type={showPassword ? 'text' : 'password'}
                                     id="password"
                                     value={formData.password}
                                     onChange={handleChange}
-                                    dir="rtl"
                                     InputProps={{
                                         startAdornment: (
                                             <InputAdornment position="start">
@@ -245,12 +242,11 @@ const Register = () => {
                                     required
                                     fullWidth
                                     name="department"
-                                    label="القسم الأكاديمي"
+                                    label="Academic department"
                                     id="department"
                                     value={formData.department}
                                     onChange={handleChange}
-                                    dir="rtl"
-                                    placeholder="مثال: علوم الحاسب"
+                                    placeholder="Example: Computer Science"
                                     sx={{
                                         '& .MuiOutlinedInput-root': {
                                             borderRadius: '12px'
@@ -265,12 +261,11 @@ const Register = () => {
                                     required
                                     fullWidth
                                     name="specialization"
-                                    label="التخصص"
+                                    label="Specialization"
                                     id="specialization"
                                     value={formData.specialization}
                                     onChange={handleChange}
-                                    dir="rtl"
-                                    placeholder="مثال: هندسة البرمجيات"
+                                    placeholder="Example: Software Engineering"
                                     sx={{
                                         '& .MuiOutlinedInput-root': {
                                             borderRadius: '12px'
@@ -286,10 +281,9 @@ const Register = () => {
                                     fullWidth
                                     select
                                     name="year"
-                                    label="السنة الدراسية"
+                                    label="Academic year"
                                     value={formData.year}
                                     onChange={handleChange}
-                                    dir="rtl"
                                     InputProps={{
                                         startAdornment: (
                                             <InputAdornment position="start">
@@ -303,12 +297,10 @@ const Register = () => {
                                         }
                                     }}
                                 >
-                                    <MenuItem value={1}>السنة الأولى</MenuItem>
-                                    <MenuItem value={2}>السنة الثانية</MenuItem>
-                                    <MenuItem value={3}>السنة الثالثة</MenuItem>
-                                    <MenuItem value={4}>السنة الرابعة</MenuItem>
-                                    <MenuItem value={5}>السنة الخامسة</MenuItem>
-                                    <MenuItem value={6}>السنة السادسة</MenuItem>
+                                    <MenuItem value={1}>Year 1</MenuItem>
+                                    <MenuItem value={2}>Year 2</MenuItem>
+                                    <MenuItem value={3}>Year 3</MenuItem>
+                                    <MenuItem value={4}>Year 4</MenuItem>
                                 </TextField>
                             </Grid>
 
@@ -318,11 +310,10 @@ const Register = () => {
                                     required
                                     fullWidth
                                     name="whatsapp"
-                                    label="رقم الواتساب"
+                                    label="WhatsApp number"
                                     id="whatsapp"
                                     value={formData.whatsapp}
                                     onChange={handleChange}
-                                    dir="rtl"
                                     placeholder="+20 123 456 7890"
                                     InputProps={{
                                         startAdornment: (
@@ -346,10 +337,9 @@ const Register = () => {
                                     fullWidth
                                     select
                                     name="gender"
-                                    label="الجنس"
+                                    label="Gender"
                                     value={formData.gender}
                                     onChange={handleChange}
-                                    dir="rtl"
                                     InputProps={{
                                         startAdornment: (
                                             <InputAdornment position="start">
@@ -363,8 +353,8 @@ const Register = () => {
                                         }
                                     }}
                                 >
-                                    <MenuItem value="male">ذكر</MenuItem>
-                                    <MenuItem value="female">أنثى</MenuItem>
+                                    <MenuItem value="male">Male</MenuItem>
+                                    <MenuItem value="female">Female</MenuItem>
                                 </TextField>
                             </Grid>
                         </Grid>
@@ -394,18 +384,18 @@ const Register = () => {
                                 }
                             }}
                         >
-                            {loading ? 'جاري إنشاء الحساب...' : 'إنشاء الحساب'}
+                            {loading ? 'Creating your account...' : 'Create account'}
                         </Button>
 
                         <Divider sx={{ my: 2 }}>
                             <Typography variant="body2" color="text.secondary">
-                                أو
+                                or
                             </Typography>
                         </Divider>
 
                         <Box sx={{ textAlign: 'center' }}>
                             <Typography variant="body2" color="text.secondary">
-                                لديك حساب بالفعل؟{' '}
+                                Already have an account?{' '}
                                 <Link
                                     component={RouterLink}
                                     to="/login"
@@ -418,7 +408,7 @@ const Register = () => {
                                         }
                                     }}
                                 >
-                                    سجل دخول
+                                    Sign in
                                 </Link>
                             </Typography>
                         </Box>
@@ -436,7 +426,7 @@ const Register = () => {
                                     }
                                 }}
                             >
-                                ← العودة للرئيسية
+                                ← Back to homepage
                             </Link>
                         </Box>
                     </Box>

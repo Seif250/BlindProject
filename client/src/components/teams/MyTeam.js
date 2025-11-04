@@ -56,7 +56,7 @@ const MyTeam = () => {
             const response = await api.get('/teams/myteam');
             setTeam(response.data);
         } catch (error) {
-            setError('فشل في تحميل بيانات الفريق');
+            setError('Failed to load team data.');
         }
     };
 
@@ -65,11 +65,11 @@ const MyTeam = () => {
             await api.patch(`/teams/member-status/${team._id}/${memberId}`, {
                 status: newStatus
             });
-            setSuccess('تم تحديث حالة العضو بنجاح');
+            setSuccess('Member status updated successfully.');
             fetchMyTeam();
             setTimeout(() => setSuccess(''), 3000);
         } catch (error) {
-            setError('فشل في تحديث حالة العضو');
+            setError('Could not update the member status.');
             setTimeout(() => setError(''), 3000);
         }
     };
@@ -79,9 +79,9 @@ const MyTeam = () => {
             <PageWrapper>
                 <Container maxWidth="md">
                     <SectionCard sx={{ textAlign: 'center' }}>
-                        <SectionTitle variant="h6">لا يوجد فريق مسجل</SectionTitle>
+                        <SectionTitle variant="h6">No team found</SectionTitle>
                         <HelperText>
-                            قم بإنشاء فريق جديد أو انضم لأحد الفرق من صفحة الاستكشاف لتظهر تفاصيل فريقك هنا.
+                            Create a team or join one from the Explore page to see your details here.
                         </HelperText>
                     </SectionCard>
                 </Container>
@@ -96,10 +96,10 @@ const MyTeam = () => {
         <PageWrapper>
             <Container maxWidth="lg">
                 <PageHeader>
-                    <AccentBadge>لوحة الفريق</AccentBadge>
-                    <PageTitle>فريقي: {team.projectName}</PageTitle>
+                    <AccentBadge>Team Console</AccentBadge>
+                    <PageTitle>My Team: {team.projectName}</PageTitle>
                     <PageSubtitle>
-                        راجع تفاصيل مشروعك، تعرف على أعضاء فريقك، وتابع الطلبات المعلّقة في تجربة موحدة ومريحة.
+                        Review your project details, stay close to your teammates, and manage pending requests without leaving this neon cockpit.
                     </PageSubtitle>
                 </PageHeader>
 
@@ -111,11 +111,11 @@ const MyTeam = () => {
                         <Grid item xs={12} md={4}>
                             <Stack spacing={3}>
                                 <SectionCard>
-                                    <SectionTitle variant="h6">تفاصيل المشروع</SectionTitle>
+                                    <SectionTitle variant="h6">Project Details</SectionTitle>
                                     <HelperText sx={{ mb: 2 }}>
-                                        {team.description || 'لم يتم إضافة وصف للمشروع بعد.'}
+                                        {team.description || 'No project description has been added yet.'}
                                     </HelperText>
-                                    <InfoChip label={`عدد الأعضاء: ${acceptedMembers.length} / ${team.maxMembers}`} sx={{ mb: 2 }} />
+                                    <InfoChip label={`Members: ${acceptedMembers.length} / ${team.maxMembers}`} sx={{ mb: 2 }} />
                                     <Button
                                         startIcon={<WhatsAppIcon />}
                                         variant="outlined"
@@ -124,12 +124,12 @@ const MyTeam = () => {
                                         target="_blank"
                                         rel="noopener"
                                     >
-                                        تواصل عبر الواتساب
+                                        Open WhatsApp Chat
                                     </Button>
                                 </SectionCard>
 
                                 <SectionCard>
-                                    <SectionTitle variant="h6">الأدوار المطلوبة</SectionTitle>
+                                    <SectionTitle variant="h6">Required Roles</SectionTitle>
                                     <Stack spacing={1.5}>
                                         {team.roles.map((role, index) => {
                                             const filled = acceptedMembers.some((member) => member.role === role.title);
@@ -142,7 +142,7 @@ const MyTeam = () => {
                                                         <HelperText>{role.description}</HelperText>
                                                     </Box>
                                                     <InfoChip
-                                                        label={filled ? 'تم شغل الدور' : 'ما زال متاحاً'}
+                                                        label={filled ? 'Role filled' : 'Still available'}
                                                         sx={{ backgroundColor: filled ? 'rgba(5, 118, 66, 0.12)' : 'rgba(15, 23, 42, 0.06)', color: filled ? '#057642' : '#0f172a' }}
                                                     />
                                                 </MemberCard>
@@ -155,9 +155,9 @@ const MyTeam = () => {
 
                         <Grid item xs={12} md={8}>
                             <SectionCard>
-                                <SectionTitle variant="h6">أعضاء الفريق</SectionTitle>
+                                <SectionTitle variant="h6">Team Members</SectionTitle>
                                 {acceptedMembers.length === 0 ? (
-                                    <HelperText>لم يتم قبول أي أعضاء بعد.</HelperText>
+                                    <HelperText>No members have been accepted yet.</HelperText>
                                 ) : (
                                     <Stack spacing={2}>
                                         {acceptedMembers.map((member) => (
@@ -170,7 +170,7 @@ const MyTeam = () => {
                                                     >
                                                         <PersonIcon />
                                                     </Avatar>
-                                                    <Box sx={{ textAlign: 'right' }}>
+                                                    <Box sx={{ textAlign: 'left' }}>
                                                         <Typography sx={{ fontWeight: 600, color: '#0f172a' }}>
                                                             {member.user.name}
                                                         </Typography>
@@ -200,7 +200,7 @@ const MyTeam = () => {
 
                             {pendingMembers.length > 0 && (
                                 <SectionCard sx={{ mt: 3 }}>
-                                    <SectionTitle variant="h6">طلبات الانضمام</SectionTitle>
+                                    <SectionTitle variant="h6">Join Requests</SectionTitle>
                                     <Stack spacing={2}
                                         divider={<Divider flexItem sx={{ borderColor: 'rgba(15, 23, 42, 0.06)' }} />}
                                     >
@@ -210,12 +210,12 @@ const MyTeam = () => {
                                                     <Avatar src={member.user.image}>
                                                         <PersonIcon />
                                                     </Avatar>
-                                                    <Box sx={{ textAlign: 'right' }}>
+                                                    <Box sx={{ textAlign: 'left' }}>
                                                         <Typography sx={{ fontWeight: 600, color: '#0f172a' }}>
                                                             {member.user.name}
                                                         </Typography>
                                                         <HelperText>{member.user.email}</HelperText>
-                                                        <InfoChip label={`الدور المطلوب: ${member.role}`} sx={{ mt: 1 }} />
+                                                        <InfoChip label={`Requested role: ${member.role}`} sx={{ mt: 1 }} />
                                                     </Box>
                                                 </Box>
                                                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
@@ -225,7 +225,7 @@ const MyTeam = () => {
                                                         startIcon={<CheckCircleIcon />}
                                                         onClick={() => handleStatusChange(member.user._id, 'accepted')}
                                                     >
-                                                        قبول
+                                                        Approve
                                                     </Button>
                                                     <Button
                                                         variant="outlined"
@@ -233,7 +233,7 @@ const MyTeam = () => {
                                                         startIcon={<CancelIcon />}
                                                         onClick={() => handleStatusChange(member.user._id, 'rejected')}
                                                     >
-                                                        رفض
+                                                        Decline
                                                     </Button>
                                                 </Stack>
                                             </MemberCard>

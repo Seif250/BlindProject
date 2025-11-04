@@ -35,11 +35,11 @@ const SearchTeams = () => {
             setTeams(response.data);
             setFilteredTeams(response.data);
         } catch (error) {
-            setError('فشل في تحميل الفرق المتاحة');
+            setError('Failed to load available teams.');
         }
     };
 
-    // دالة لحساب الأدوار المتاحة
+    // Helper to calculate available roles on a team
     const getAvailableRoles = (team) => {
         const takenRoles = team.members
             .filter(m => m.status === 'accepted')
@@ -48,7 +48,7 @@ const SearchTeams = () => {
         return team.roles.filter(role => !takenRoles.includes(role.title));
     };
 
-    // دالة لحساب عدد الأعضاء الحاليين
+    // Helper to count current confirmed members
     const getCurrentMembersCount = (team) => {
         return team.members.filter(m => m.status === 'accepted').length;
     };
@@ -65,13 +65,13 @@ const SearchTeams = () => {
     const handleJoinRequest = async (teamId, role) => {
         try {
             await api.post(`/teams/join/${teamId}`, { role });
-            setSuccess('تم إرسال طلب الانضمام بنجاح');
+            setSuccess('Join request sent successfully.');
             setSelectedRole('');
             setOpenDialog(false);
             setTimeout(() => setSuccess(''), 5000);
             await fetchTeams();
         } catch (error) {
-            setError(error.response?.data?.message || 'فشل في إرسال طلب الانضمام');
+            setError(error.response?.data?.message || 'Failed to submit the join request.');
             setTimeout(() => setError(''), 5000);
         }
     };
@@ -108,16 +108,16 @@ const SearchTeams = () => {
                                 WebkitTextFillColor: 'transparent'
                             }}
                         >
-                            🔍 البحث عن الفرق
+                            🔍 Find a Team
                         </Typography>
                         <Typography variant="body1" color="text.secondary">
-                            اكتشف الفرق المتاحة وانضم للمشاريع المثيرة
+                            Discover active teams and jump into the projects that excite you.
                         </Typography>
                     </Box>
 
                     <TextField
                         fullWidth
-                        label="ابحث عن فريق..."
+                        label="Search for a team..."
                         value={searchTerm}
                         onChange={handleSearch}
                         sx={{ 
@@ -133,7 +133,6 @@ const SearchTeams = () => {
                                 }
                             }
                         }}
-                        dir="rtl"
                     />
 
                 {error && (
@@ -207,14 +206,14 @@ const SearchTeams = () => {
                                         <Box sx={{ display: 'flex', alignItems: 'center', my: 1 }}>
                                             <GroupIcon sx={{ mr: 1 }} />
                                             <Typography>
-                                                {currentMembers} / {team.maxMembers} عضو
+                                                {currentMembers} / {team.maxMembers} members
                                             </Typography>
                                         </Box>
 
                                         <Divider sx={{ my: 2 }} />
                                         
                                         <Typography variant="subtitle2" gutterBottom>
-                                            الأدوار المتاحة:
+                                            Available roles:
                                         </Typography>
                                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
                                             {availableRoles.map((role, index) => (
@@ -227,7 +226,7 @@ const SearchTeams = () => {
                                             ))}
                                             {availableRoles.length === 0 && (
                                                 <Typography color="textSecondary" variant="body2">
-                                                    لا توجد أدوار متاحة حالياً
+                                                    No roles currently available
                                                 </Typography>
                                             )}
                                         </Box>
@@ -242,8 +241,8 @@ const SearchTeams = () => {
                                             }}
                                         >
                                             {currentMembers >= team.maxMembers 
-                                                ? 'الفريق مكتمل' 
-                                                : 'طلب انضمام'}
+                                                ? 'Team is full' 
+                                                : 'Request to join'}
                                         </Button>
                                     </CardContent>
                                 </Card>
@@ -272,13 +271,13 @@ const SearchTeams = () => {
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent'
                     }}>
-                        🎯 طلب انضمام للفريق
+                        🎯 Request to Join
                     </DialogTitle>
                     <DialogContent>
                         <TextField
                             select
                             fullWidth
-                            label="اختر الدور المناسب لك"
+                            label="Choose the role that fits you"
                             value={selectedRole}
                             onChange={(e) => setSelectedRole(e.target.value)}
                             sx={{ 
@@ -287,7 +286,6 @@ const SearchTeams = () => {
                                     borderRadius: '12px'
                                 }
                             }}
-                            dir="rtl"
                         >
                             {selectedTeam && getAvailableRoles(selectedTeam).map((role, index) => (
                                 <MenuItem key={index} value={role.title}>
@@ -304,11 +302,13 @@ const SearchTeams = () => {
                                 px: 3
                             }}
                         >
-                            إلغاء
+                            Cancel
                         </Button>
                         <Button 
                             onClick={() => {
-                                handleJoinRequest(selectedTeam._id, selectedRole);
+                                if (selectedTeam) {
+                                    handleJoinRequest(selectedTeam._id, selectedRole);
+                                }
                                 setOpenDialog(false);
                             }}
                             variant="contained"
@@ -322,7 +322,7 @@ const SearchTeams = () => {
                                 }
                             }}
                         >
-                            🚀 إرسال الطلب
+                            🚀 Send Request
                         </Button>
                     </DialogActions>
                 </Dialog>

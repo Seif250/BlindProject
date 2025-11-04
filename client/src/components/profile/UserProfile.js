@@ -35,7 +35,7 @@ const UserProfile = () => {
                 setUser(response.data);
                 setError('');
             } catch (error) {
-                setError('فشل في تحميل بيانات المستخدم');
+                setError('Failed to load user details.');
             } finally {
                 setLoading(false);
             }
@@ -64,7 +64,7 @@ const UserProfile = () => {
                     sx={{ mt: 2 }}
                     variant="outlined"
                 >
-                    رجوع
+                    Back
                 </Button>
             </Container>
         );
@@ -81,7 +81,7 @@ const UserProfile = () => {
                     sx={{ mb: 3 }}
                     variant="text"
                 >
-                    رجوع
+                    Back
                 </Button>
 
                 <Box sx={{ textAlign: 'center', mb: 4 }}>
@@ -102,7 +102,7 @@ const UserProfile = () => {
                         {user.name}
                     </Typography>
                     <Chip
-                        label={user.gender === 'male' ? 'ذكر' : 'أنثى'}
+                        label={user.gender === 'male' ? 'Male' : 'Female'}
                         color="primary"
                         sx={{ mt: 1 }}
                     />
@@ -115,7 +115,7 @@ const UserProfile = () => {
                                 <EmailIcon sx={{ color: 'primary.main', fontSize: 30 }} />
                                 <Box>
                                     <Typography variant="caption" color="textSecondary">
-                                        البريد الإلكتروني
+                                        Email
                                     </Typography>
                                     <Typography variant="body1">
                                         {user.email}
@@ -131,10 +131,10 @@ const UserProfile = () => {
                                 <WorkIcon sx={{ color: 'primary.main', fontSize: 30 }} />
                                 <Box>
                                     <Typography variant="caption" color="textSecondary">
-                                        التخصص
+                                        Specialization
                                     </Typography>
                                     <Typography variant="body1">
-                                        {user.specialization || 'غير محدد'}
+                                        {user.specialization || 'Not set'}
                                     </Typography>
                                 </Box>
                             </Box>
@@ -147,10 +147,10 @@ const UserProfile = () => {
                                 <SchoolIcon sx={{ color: 'primary.main', fontSize: 30 }} />
                                 <Box>
                                     <Typography variant="caption" color="textSecondary">
-                                        السنة الدراسية
+                                        Academic year
                                     </Typography>
                                     <Typography variant="body1">
-                                        السنة {user.year || 'غير محددة'}
+                                        Year {user.year || 'Not provided'}
                                     </Typography>
                                 </Box>
                             </Box>
@@ -163,7 +163,7 @@ const UserProfile = () => {
                                 <WhatsAppIcon sx={{ color: 'success.main', fontSize: 30 }} />
                                 <Box sx={{ flexGrow: 1 }}>
                                     <Typography variant="caption" color="textSecondary">
-                                        رقم الواتساب
+                                        WhatsApp number
                                     </Typography>
                                     <Typography variant="body1">
                                         {user.whatsapp}
@@ -184,7 +184,7 @@ const UserProfile = () => {
                             size="large"
                             sx={{ mt: 2, py: 1.5 }}
                         >
-                            تواصل عبر الواتساب
+                            Message on WhatsApp
                         </Button>
                     </Grid>
                 </Grid>

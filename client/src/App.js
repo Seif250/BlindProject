@@ -1,30 +1,25 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Box, CssBaseline } from '@mui/material';
+import { Box, CssBaseline, CircularProgress } from '@mui/material';
 import { theme } from './theme/theme';
 import { ThemeProvider } from '@mui/material/styles';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 // Layout Components
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
-import Home from './components/layout/Home';
 
-// Auth Components
-import Login from './components/auth/Login';
-import Register from './components/auth/Register';
-
-// Profile Components
-import Profile from './components/profile/Profile';
-import UserProfile from './components/profile/UserProfile';
-
-// Team Components
-import Teams from './components/teams/Teams';
-import CreateTeam from './components/teams/CreateTeam';
-import SearchTeams from './components/teams/SearchTeams';
-import MyTeam from './components/teams/MyTeam';
-import ManageRequests from './components/teams/ManageRequests';
-
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+// Lazily loaded route components keep the glow look while trimming the initial bundle
+const Home = lazy(() => import('./components/layout/Home'));
+const Login = lazy(() => import('./components/auth/Login'));
+const Register = lazy(() => import('./components/auth/Register'));
+const Profile = lazy(() => import('./components/profile/Profile'));
+const UserProfile = lazy(() => import('./components/profile/UserProfile'));
+const Teams = lazy(() => import('./components/teams/Teams'));
+const CreateTeam = lazy(() => import('./components/teams/CreateTeam'));
+const SearchTeams = lazy(() => import('./components/teams/SearchTeams'));
+const MyTeam = lazy(() => import('./components/teams/MyTeam'));
+const ManageRequests = lazy(() => import('./components/teams/ManageRequests'));
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -48,6 +43,12 @@ const Layout = ({ children }) => {
   );
 };
 
+const LoadingState = () => (
+  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+    <CircularProgress color="primary" />
+  </Box>
+);
+
 function App() {
   return (
     <Router>
@@ -56,23 +57,25 @@ function App() {
         <AuthProvider>
           <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Layout>
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+              <Suspense fallback={<LoadingState />}>
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
 
-                {/* Protected Routes */}
-                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                <Route path="/profile/:userId" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
-                
-                {/* Team Routes */}
-                <Route path="/teams" element={<ProtectedRoute><Teams /></ProtectedRoute>} />
-                <Route path="/teams/create" element={<ProtectedRoute><CreateTeam /></ProtectedRoute>} />
-                <Route path="/teams/search" element={<ProtectedRoute><SearchTeams /></ProtectedRoute>} />
-                <Route path="/teams/my-team" element={<ProtectedRoute><MyTeam /></ProtectedRoute>} />
-                <Route path="/teams/requests" element={<ProtectedRoute><ManageRequests /></ProtectedRoute>} />
-              </Routes>
+                  {/* Protected Routes */}
+                  <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                  <Route path="/profile/:userId" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+                  
+                  {/* Team Routes */}
+                  <Route path="/teams" element={<ProtectedRoute><Teams /></ProtectedRoute>} />
+                  <Route path="/teams/create" element={<ProtectedRoute><CreateTeam /></ProtectedRoute>} />
+                  <Route path="/teams/search" element={<ProtectedRoute><SearchTeams /></ProtectedRoute>} />
+                  <Route path="/teams/my-team" element={<ProtectedRoute><MyTeam /></ProtectedRoute>} />
+                  <Route path="/teams/requests" element={<ProtectedRoute><ManageRequests /></ProtectedRoute>} />
+                </Routes>
+              </Suspense>
             </Layout>
           </Box>
         </AuthProvider>

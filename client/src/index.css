@@ -1,52 +1,45 @@
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
 }
 
 html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
+  background-color: #050714;
 }
 
 body {
   margin: 0;
-  direction: rtl;
-  font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  direction: ltr;
+  font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  color: #e2e8f0;
+  background-color: #050714;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(127, 90, 240, 0.18), transparent 55%),
+    radial-gradient(circle at 80% 0%, rgba(44, 182, 125, 0.16), transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(14, 165, 233, 0.14), transparent 50%);
   background-attachment: fixed;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-/* تأثيرات 3D و Animations عامة */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  font-family: 'Fira Code', 'Source Code Pro', Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 @keyframes float {
   0%, 100% {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
   50% {
-    transform: translateY(-20px);
+    transform: translateY(-12px);
   }
 }
 
@@ -55,94 +48,10 @@ code {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.05);
+    transform: scale(1.04);
   }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-/* Glass Morphism Effect */
-.glass-effect {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-}
-
-/* RTL specific styles */
-.MuiTextField-root {
-  text-align: right;
-}
-
-.MuiInputLabel-root {
-  right: 1.75rem !important;
-  left: auto !important;
-  transform-origin: right !important;
-}
-
-.MuiOutlinedInput-notchedOutline {
-  text-align: right !important;
-}
-
-/* Custom scrollbar مع تأثيرات 3D */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
-  transition: all 0.3s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
-}
-
-/* تأثير Selection */
-::selection {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-::-moz-selection {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-/* تأثير تركيز للعناصر */
-*:focus-visible {
-  outline: 3px solid rgba(102, 126, 234, 0.5);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* تأثيرات Hover للروابط */
-a {
-  transition: all 0.3s ease;
-  text-decoration: none;
-}
-
-a:hover {
-  transform: translateY(-2px);
-}
-
-/* Loading Animation */
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -153,10 +62,50 @@ a:hover {
 }
 
 .loading {
-  animation: spin 1s linear infinite;
+  animation: spin 1.1s linear infinite;
 }
 
-/* Smooth Transitions للكل */
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #a68bff;
+  transform: translateY(-1px);
+}
+
+::selection {
+  background: rgba(127, 90, 240, 0.5);
+  color: #0f172a;
+}
+
+::-moz-selection {
+  background: rgba(127, 90, 240, 0.5);
+  color: #0f172a;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%);
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(127, 90, 240, 0.35);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  box-shadow: 0 0 16px rgba(127, 90, 240, 0.5);
+}
+
+*:focus-visible {
+  outline: 2px solid rgba(127, 90, 240, 0.55);
+  outline-offset: 3px;
+  border-radius: 6px;
 }

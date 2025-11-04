@@ -79,12 +79,12 @@ const CreateTeam = () => {
         setSuccess('');
         try {
             await api.post('/teams/create', formData);
-            setSuccess('تم إنشاء الفريق بنجاح! جاري التوجيه...');
+            setSuccess('Team created successfully! Redirecting...');
             setTimeout(() => {
                 navigate('/teams/my-team');
             }, 1500);
         } catch (error) {
-            setError(error.response?.data?.message || 'حدث خطأ في إنشاء الفريق');
+            setError(error.response?.data?.message || 'Something went wrong while creating the team.');
             setTimeout(() => setError(''), 5000);
         }
     };
@@ -93,10 +93,10 @@ const CreateTeam = () => {
         <PageWrapper>
             <Container maxWidth="lg">
                 <PageHeader>
-                    <AccentBadge>إدارة الفرق</AccentBadge>
-                    <PageTitle>إنشاء فريق جديد</PageTitle>
+                    <AccentBadge>Team Management</AccentBadge>
+                    <PageTitle>Create a New Team</PageTitle>
                     <PageSubtitle>
-                        عرّف مشروعك، حدِّد الأدوار المطلوبة، وشارك طريقة التواصل مع الفريق داخل مساحة هادئة ومنظمة.
+                        Describe your project, highlight the roles you need, and share your contact channel inside a calm, organized space.
                     </PageSubtitle>
                 </PageHeader>
 
@@ -108,16 +108,15 @@ const CreateTeam = () => {
                                 {success && <Alert severity="success">{success}</Alert>}
 
                                 <Box>
-                                    <SectionTitle variant="h6">تفاصيل المشروع</SectionTitle>
+                                    <SectionTitle variant="h6">Project Details</SectionTitle>
                                     <Stack spacing={2.5}>
                                         <TextField
                                             required
                                             fullWidth
                                             name="projectName"
-                                            label="اسم المشروع"
+                                            label="Project Name"
                                             value={formData.projectName}
                                             onChange={handleChange}
-                                            dir="rtl"
                                         />
                                         <TextField
                                             required
@@ -125,10 +124,9 @@ const CreateTeam = () => {
                                             multiline
                                             minRows={4}
                                             name="description"
-                                            label="وصف المشروع"
+                                            label="Project Description"
                                             value={formData.description}
                                             onChange={handleChange}
-                                            dir="rtl"
                                         />
                                         <Grid container spacing={2}>
                                             <Grid item xs={12} sm={6}>
@@ -137,10 +135,9 @@ const CreateTeam = () => {
                                                     fullWidth
                                                     type="number"
                                                     name="maxMembers"
-                                                    label="العدد الأقصى للأعضاء"
+                                                    label="Maximum Members"
                                                     value={formData.maxMembers}
                                                     onChange={handleChange}
-                                                    dir="rtl"
                                                 />
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
@@ -148,10 +145,9 @@ const CreateTeam = () => {
                                                     required
                                                     fullWidth
                                                     name="whatsapp"
-                                                    label="رقم الواتساب"
+                                                    label="WhatsApp Number"
                                                     value={formData.whatsapp}
                                                     onChange={handleChange}
-                                                    dir="rtl"
                                                 />
                                             </Grid>
                                         </Grid>
@@ -161,9 +157,9 @@ const CreateTeam = () => {
                                 <Divider sx={{ borderColor: 'rgba(15, 23, 42, 0.08)' }} />
 
                                 <Box>
-                                    <SectionTitle variant="h6">الأدوار المطلوبة</SectionTitle>
+                                    <SectionTitle variant="h6">Required Roles</SectionTitle>
                                     <HelperText sx={{ mb: 2 }}>
-                                        وضّح المسمى الوظيفي ووصفاً مختصراً لكل دور حتى يعرف المتقدمون ما تحتاجه بالضبط.
+                                        Spell out the role title and a quick summary so applicants know exactly what you need.
                                     </HelperText>
                                     <Stack spacing={2.5}>
                                         {formData.roles.map((role, index) => (
@@ -173,20 +169,18 @@ const CreateTeam = () => {
                                                         <TextField
                                                             required
                                                             fullWidth
-                                                            label="المسمى الوظيفي"
+                                                            label="Role Title"
                                                             value={role.title}
                                                             onChange={(e) => handleRoleChange(index, 'title', e.target.value)}
-                                                            dir="rtl"
                                                         />
                                                     </Grid>
                                                     <Grid item xs={12} md={7}>
                                                         <TextField
                                                             required
                                                             fullWidth
-                                                            label="الوصف"
+                                                            label="Role Description"
                                                             value={role.description}
                                                             onChange={(e) => handleRoleChange(index, 'description', e.target.value)}
-                                                            dir="rtl"
                                                         />
                                                     </Grid>
                                                     <Grid item xs={12} md={1} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
@@ -207,17 +201,17 @@ const CreateTeam = () => {
                                             variant="outlined"
                                             sx={{ alignSelf: 'flex-start' }}
                                         >
-                                            إضافة دور جديد
+                                            Add Another Role
                                         </Button>
                                     </Stack>
                                 </Box>
 
                                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                                     <Button type="submit" variant="contained" size="large">
-                                        إنشاء الفريق
+                                        Create Team
                                     </Button>
                                     <Button variant="outlined" size="large" onClick={() => navigate('/teams')}>
-                                        إلغاء
+                                        Cancel
                                     </Button>
                                 </Box>
                             </Stack>
@@ -226,16 +220,16 @@ const CreateTeam = () => {
 
                     <Grid item xs={12} md={4}>
                         <SectionCard>
-                            <SectionTitle variant="h6">إرشادات سريعة</SectionTitle>
+                            <SectionTitle variant="h6">Quick Guidance</SectionTitle>
                             <Stack spacing={2.5}>
                                 <HelperText>
-                                    • اجمع بين المهارات التقنية والمهارات الشخصية لضمان توازن الفريق.
+                                    - Blend technical skills and soft skills to keep the team balanced.
                                 </HelperText>
                                 <HelperText>
-                                    • تأكد من صحة رقم الواتساب لأن المتقدمين سيستخدمونه للتواصل السريع.
+                                    - Double-check your WhatsApp number so applicants can reach you instantly.
                                 </HelperText>
                                 <HelperText>
-                                    • يمكنك دائماً تعديل بيانات المشروع أو الأدوار لاحقاً من صفحة فريقي.
+                                    - You can always update project data or roles later from the My Team page.
                                 </HelperText>
                             </Stack>
                         </SectionCard>

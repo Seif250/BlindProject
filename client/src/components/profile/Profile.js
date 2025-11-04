@@ -92,10 +92,10 @@ const Profile = () => {
                     ...prev,
                     image: response.data.imageUrl
                 }));
-                setSuccess('تم تحديث الصورة بنجاح');
+                setSuccess('Profile photo updated successfully.');
                 setTimeout(() => setSuccess(''), 3000);
             } catch (error) {
-                setError('فشل في تحميل الصورة');
+                setError('Failed to upload the photo.');
                 setTimeout(() => setError(''), 5000);
             }
         }
@@ -106,12 +106,12 @@ const Profile = () => {
         try {
             const response = await api.put('/user/profile', formData);
             login(response.data, localStorage.getItem('token'));
-            setSuccess('تم تحديث الملف الشخصي بنجاح');
+            setSuccess('Profile updated successfully.');
             setError('');
             setIsEditing(false);
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
-            setError(err.response?.data?.message || 'حدث خطأ في تحديث البيانات');
+            setError(err.response?.data?.message || 'Something went wrong while updating your profile.');
             setSuccess('');
             setTimeout(() => setError(''), 5000);
         }
@@ -121,10 +121,10 @@ const Profile = () => {
         <PageWrapper>
             <Container maxWidth="lg">
                 <PageHeader>
-                    <AccentBadge>ملفي الشخصي</AccentBadge>
-                    <PageTitle>إدارة الحساب</PageTitle>
+                    <AccentBadge>My Profile</AccentBadge>
+                    <PageTitle>Account Management</PageTitle>
                     <PageSubtitle>
-                        حدّث بياناتك، راجع تفاصيل حسابك، وتأكد من جاهزيتك للانضمام إلى أفضل الفرق.
+                        Keep your details fresh, review your account at a glance, and stay ready to join the brightest teams.
                     </PageSubtitle>
                 </PageHeader>
 
@@ -187,7 +187,7 @@ const Profile = () => {
                                         fullWidth
                                         onClick={() => setIsEditing(true)}
                                     >
-                                        تعديل الملف الشخصي
+                                        Edit Profile
                                     </Button>
                                 )}
                             </SectionCard>
@@ -196,58 +196,53 @@ const Profile = () => {
                         <Grid item xs={12} md={8}>
                             {isEditing ? (
                                 <SectionCard component="form" onSubmit={handleSubmit}>
-                                    <SectionTitle variant="h6">تعديل البيانات</SectionTitle>
+                                    <SectionTitle variant="h6">Edit Details</SectionTitle>
                                     <Grid container spacing={2.5}>
                                         <Grid item xs={12}>
                                             <TextField
                                                 required
                                                 fullWidth
                                                 name="name"
-                                                label="الاسم"
+                                                label="Name"
                                                 value={formData.name}
                                                 onChange={handleChange}
-                                                dir="rtl"
                                             />
                                         </Grid>
                                         <Grid item xs={12}>
                                             <TextField
                                                 fullWidth
                                                 name="email"
-                                                label="البريد الإلكتروني"
+                                                label="Email"
                                                 value={formData.email}
                                                 disabled
-                                                dir="rtl"
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
                                             <TextField
                                                 fullWidth
                                                 name="specialization"
-                                                label="التخصص"
+                                                label="Specialization"
                                                 value={formData.specialization}
                                                 onChange={handleChange}
-                                                dir="rtl"
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
                                             <TextField
                                                 fullWidth
                                                 name="year"
-                                                label="السنة الدراسية"
+                                                label="Academic Year"
                                                 type="number"
                                                 value={formData.year}
                                                 onChange={handleChange}
-                                                dir="rtl"
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
                                             <TextField
                                                 fullWidth
                                                 name="whatsapp"
-                                                label="رقم الواتساب"
+                                                label="WhatsApp Number"
                                                 value={formData.whatsapp}
                                                 onChange={handleChange}
-                                                dir="rtl"
                                             />
                                         </Grid>
                                         <Grid item xs={12} sm={6}>
@@ -255,13 +250,12 @@ const Profile = () => {
                                                 fullWidth
                                                 select
                                                 name="gender"
-                                                label="الجنس"
+                                                label="Gender"
                                                 value={formData.gender}
                                                 onChange={handleChange}
-                                                dir="rtl"
                                             >
-                                                <MenuItem value="male">ذكر</MenuItem>
-                                                <MenuItem value="female">أنثى</MenuItem>
+                                                <MenuItem value="male">Male</MenuItem>
+                                                <MenuItem value="female">Female</MenuItem>
                                             </TextField>
                                         </Grid>
                                     </Grid>
@@ -270,32 +264,32 @@ const Profile = () => {
 
                                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                                         <Button type="submit" variant="contained">
-                                            حفظ التغييرات
+                                            Save changes
                                         </Button>
                                         <Button variant="outlined" onClick={() => setIsEditing(false)}>
-                                            إلغاء
+                                            Cancel
                                         </Button>
                                     </Box>
                                 </SectionCard>
                             ) : (
                                 <SectionCard>
-                                    <SectionTitle variant="h6">بياناتي الأساسية</SectionTitle>
+                                    <SectionTitle variant="h6">My Core Info</SectionTitle>
                                     <Stack spacing={2}>
                                         <InfoRow>
-                                            <HelperText>التخصص</HelperText>
-                                            <Typography>{formData.specialization || 'غير محدد'}</Typography>
+                                            <HelperText>Specialization</HelperText>
+                                            <Typography>{formData.specialization || 'Not set'}</Typography>
                                         </InfoRow>
                                         <InfoRow>
-                                            <HelperText>السنة الدراسية</HelperText>
-                                            <Typography>{formData.year || 'غير محدد'}</Typography>
+                                            <HelperText>Academic Year</HelperText>
+                                            <Typography>{formData.year || 'Not set'}</Typography>
                                         </InfoRow>
                                         <InfoRow>
-                                            <HelperText>رقم الواتساب</HelperText>
-                                            <Typography>{formData.whatsapp || 'لم يتم الإضافة'}</Typography>
+                                            <HelperText>WhatsApp Number</HelperText>
+                                            <Typography>{formData.whatsapp || 'Not provided'}</Typography>
                                         </InfoRow>
                                         <InfoRow>
-                                            <HelperText>الجنس</HelperText>
-                                            <Typography>{formData.gender === 'male' ? 'ذكر' : formData.gender === 'female' ? 'أنثى' : 'غير محدد'}</Typography>
+                                            <HelperText>Gender</HelperText>
+                                            <Typography>{formData.gender === 'male' ? 'Male' : formData.gender === 'female' ? 'Female' : 'Not set'}</Typography>
                                         </InfoRow>
                                     </Stack>
                                 </SectionCard>

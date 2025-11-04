@@ -51,12 +51,12 @@ const Login = () => {
         try {
             const response = await api.post('/auth/login', formData);
             login(response.data.user, response.data.token);
-            setSuccess('تم تسجيل الدخول بنجاح! جاري التوجيه...');
+            setSuccess('Signed in successfully! Redirecting...');
             setTimeout(() => {
                 navigate('/teams');
             }, 1000);
         } catch (err) {
-            setError(err.response?.data?.message || 'حدث خطأ في تسجيل الدخول');
+            setError(err.response?.data?.message || 'Something went wrong while signing in.');
             setTimeout(() => setError(''), 5000);
         } finally {
             setLoading(false);
@@ -115,10 +115,10 @@ const Login = () => {
                                 mb: 1
                             }}
                         >
-                            تسجيل الدخول
+                            Sign in
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            مرحباً بك مجدداً! سجل دخولك للمتابعة
+                            Welcome back! Sign in to keep building glowing teams.
                         </Typography>
                     </Box>
 
@@ -158,13 +158,12 @@ const Login = () => {
                             required
                             fullWidth
                             id="email"
-                            label="البريد الإلكتروني"
+                            label="Email"
                             name="email"
                             autoComplete="email"
                             autoFocus
                             value={formData.email}
                             onChange={handleChange}
-                            dir="rtl"
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -186,13 +185,12 @@ const Login = () => {
                             required
                             fullWidth
                             name="password"
-                            label="كلمة المرور"
+                            label="Password"
                             type={showPassword ? 'text' : 'password'}
                             id="password"
                             autoComplete="current-password"
                             value={formData.password}
                             onChange={handleChange}
-                            dir="rtl"
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -233,7 +231,7 @@ const Login = () => {
                                     }
                                 }}
                             >
-                                نسيت كلمة المرور؟
+                                Forgot your password?
                             </Link>
                         </Box>
 
@@ -262,18 +260,18 @@ const Login = () => {
                                 }
                             }}
                         >
-                            {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
+                            {loading ? 'Signing you in...' : 'Sign in'}
                         </Button>
 
                         <Divider sx={{ my: 2 }}>
                             <Typography variant="body2" color="text.secondary">
-                                أو
+                                or
                             </Typography>
                         </Divider>
 
                         <Box sx={{ textAlign: 'center' }}>
                             <Typography variant="body2" color="text.secondary">
-                                ليس لديك حساب؟{' '}
+                                Don’t have an account yet?{' '}
                                 <Link
                                     component={RouterLink}
                                     to="/register"
@@ -286,7 +284,7 @@ const Login = () => {
                                         }
                                     }}
                                 >
-                                    سجل الآن
+                                    Create one now
                                 </Link>
                             </Typography>
                         </Box>
@@ -304,7 +302,7 @@ const Login = () => {
                                     }
                                 }}
                             >
-                                ← العودة للرئيسية
+                                ← Back to homepage
                             </Link>
                         </Box>
                     </Box>

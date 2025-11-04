@@ -65,29 +65,29 @@ const Teams = () => {
 
     const quickActions = [
         {
-            title: 'إنشاء فريق جديد',
-            description: 'ابدأ مشروعك وحدد الأدوار التي تحتاج إليها في دقائق معدودة.',
+            title: 'Create a New Team',
+            description: 'Launch your project and define the roles you need in just a few minutes.',
             icon: <Add fontSize="small" />,
             color: '#0A66C2',
             action: () => navigate('/teams/create')
         },
         {
-            title: 'استكشف الفرق',
-            description: 'تصفح الفرق المفتوحة وانضم للمشروع المناسب لخبراتك.',
+            title: 'Explore Teams',
+            description: 'Browse open teams and join the project that fits your skills.',
             icon: <Search fontSize="small" />,
             color: '#057642',
             action: () => navigate('/teams/search')
         },
         {
-            title: 'فريقي الحالي',
-            description: 'تابع أداء فريقك، الأعضاء، والأدوار المتبقية المتاحة.',
+            title: 'My Current Team',
+            description: 'Track your team performance, members, and any remaining open roles.',
             icon: <Group fontSize="small" />,
             color: '#1D4ED8',
             action: () => navigate('/teams/my-team')
         },
         {
-            title: 'طلبات الانضمام',
-            description: 'راجع الطلبات الجديدة وقم بالرد عليها بسرعة وسهولة.',
+            title: 'Join Requests',
+            description: 'Review new requests and respond in seconds without breaking your flow.',
             icon: <MailOutline fontSize="small" />,
             color: '#9333EA',
             action: () => navigate('/teams/requests')
@@ -95,32 +95,32 @@ const Teams = () => {
     ];
 
     const stats = [
-        { label: 'الفرق النشطة', value: '150+', color: '#0A66C2', icon: <Group fontSize="small" /> },
-        { label: 'الطلاب المشاركين', value: '500+', color: '#057642', icon: <School fontSize="small" /> },
-        { label: 'المشاريع المكتملة', value: '80+', color: '#1D4ED8', icon: <EmojiEvents fontSize="small" /> }
+        { label: 'Active teams', value: '150+', color: '#0A66C2', icon: <Group fontSize="small" /> },
+        { label: 'Participating students', value: '500+', color: '#057642', icon: <School fontSize="small" /> },
+        { label: 'Completed projects', value: '80+', color: '#1D4ED8', icon: <EmojiEvents fontSize="small" /> }
     ];
 
     const tips = [
-        'حدد بوضوح المهارات المطلوبة لكل دور داخل فريقك لضمان اختيار الأعضاء المناسبين.',
-        'استخدم صفحة طلبات الانضمام للرد بسرعة على المتقدمين وتحسين تجربة التواصل.',
-        'راجع إحصائيات مشاركتك بانتظام لتتأكد من توازن الأدوار وتقدم المشروع.'
+        'Clearly outline the required skills for every role so you can attract the perfect candidates.',
+        'Use the join requests page to reply quickly and keep communication on point.',
+        'Review your team metrics often to keep roles balanced and the project on track.'
     ];
 
     return (
         <PageWrapper>
             <Container maxWidth="lg">
                 <PageHeader>
-                    <AccentBadge>مساحة الفرق</AccentBadge>
-                    <PageTitle>مرحباً {user?.name || 'بك'} 👋</PageTitle>
+                    <AccentBadge>Team Hub</AccentBadge>
+                    <PageTitle>Welcome {user?.name || 'Explorer'} 👋</PageTitle>
                     <PageSubtitle>
-                        كل الأدوات التي تحتاجها لإدارة فرقك، متابعة تقدم المشاريع، واكتشاف فرص جديدة في مكان واحد بتصميم هادئ وأنيق.
+                        Everything you need to manage teams, track project momentum, and discover new opportunities inside one calm, glowing space.
                     </PageSubtitle>
                 </PageHeader>
 
                 <Grid container spacing={3}>
                     <Grid item xs={12} md={8}>
                         <SectionCard>
-                            <SectionTitle variant="h6">خطوات سريعة</SectionTitle>
+                            <SectionTitle variant="h6">Quick Actions</SectionTitle>
                             <Grid container spacing={2.5}>
                                 {quickActions.map((action, index) => (
                                     <Grid item xs={12} sm={6} key={index}>
@@ -137,7 +137,7 @@ const Teams = () => {
                                                 </HelperText>
                                             </div>
                                             <HelperText sx={{ fontSize: '0.85rem', color: `${action.color}` }}>
-                                                اضغط للانتقال ↗
+                                                Tap to open ↗
                                             </HelperText>
                                         </ActionItem>
                                     </Grid>
@@ -148,7 +148,7 @@ const Teams = () => {
 
                     <Grid item xs={12} md={4}>
                         <SectionCard>
-                            <SectionTitle variant="h6">مؤشرات سريعة</SectionTitle>
+                            <SectionTitle variant="h6">Quick Metrics</SectionTitle>
                             <Stack spacing={2.5}>
                                 {stats.map((stat, index) => (
                                     <Box
@@ -179,7 +179,7 @@ const Teams = () => {
 
                     <Grid item xs={12}>
                         <SectionCard>
-                            <SectionTitle variant="h6">نصائح سريعة للنجاح</SectionTitle>
+                            <SectionTitle variant="h6">Rapid-Fire Tips</SectionTitle>
                             <Stack spacing={2.5} divider={<Divider flexItem sx={{ borderColor: 'rgba(15, 23, 42, 0.06)' }} />}> 
                                 {tips.map((tip, index) => (
                                     <Box key={index} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>

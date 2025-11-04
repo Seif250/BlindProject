@@ -94,12 +94,13 @@ const Navbar = () => {
 
     return (
         <AppBar 
-            position="sticky" 
-            dir="rtl"
-            elevation={2}
+            position="sticky"
+            elevation={0}
             sx={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                backdropFilter: 'blur(10px)'
+                background: 'rgba(5, 9, 20, 0.82)',
+                backdropFilter: 'blur(22px)',
+                borderBottom: '1px solid rgba(148, 163, 184, 0.12)',
+                boxShadow: '0 22px 60px rgba(2, 6, 18, 0.55)'
             }}
         >
             <Container maxWidth="xl">
@@ -112,39 +113,42 @@ const Navbar = () => {
                             display: 'flex',
                             alignItems: 'center',
                             textDecoration: 'none',
-                            color: 'white',
-                            gap: 1,
+                            color: '#e2e8f0',
+                            gap: 1.5,
                             cursor: 'pointer',
-                            transition: 'transform 0.3s ease',
+                            transition: 'transform 0.3s ease, filter 0.3s ease',
                             '&:hover': {
-                                transform: 'scale(1.05)'
+                                transform: 'scale(1.03)',
+                                filter: 'brightness(1.1)'
                             }
                         }}
                     >
                         <Box
                             sx={{
-                                width: 45,
-                                height: 45,
-                                borderRadius: '12px',
-                                background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                                width: 46,
+                                height: 46,
+                                borderRadius: '14px',
+                                background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontSize: '24px',
-                                boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                                boxShadow: '0 20px 45px rgba(127, 90, 240, 0.38)'
                             }}
                         >
-                            🎓
+                            🚀
                         </Box>
                         <Typography 
                             variant="h6" 
                             sx={{ 
                                 fontWeight: 700,
-                                fontSize: '1.3rem',
-                                textShadow: '2px 2px 4px rgba(0,0,0,0.2)'
+                                fontSize: '1.28rem',
+                                letterSpacing: '0.08em',
+                                textTransform: 'uppercase',
+                                color: '#f8fafc'
                             }}
                         >
-                            نظام الفرق الجامعية
+                            Campus Teams Hub
                         </Typography>
                     </Box>
 
@@ -159,7 +163,7 @@ const Navbar = () => {
                                     startIcon={<Dashboard />}
                                     sx={navButtonStyle('/teams')}
                                 >
-                                    لوحة التحكم
+                                    Dashboard
                                 </Button>
                                 <Button 
                                     color="inherit" 
@@ -168,7 +172,7 @@ const Navbar = () => {
                                     startIcon={<Search />}
                                     sx={navButtonStyle('/teams/search')}
                                 >
-                                    البحث عن فريق
+                                    Discover Teams
                                 </Button>
                                 <Button 
                                     color="inherit" 
@@ -177,11 +181,11 @@ const Navbar = () => {
                                     startIcon={<Group />}
                                     sx={navButtonStyle('/teams/my-team')}
                                 >
-                                    فريقي
+                                    My Team
                                 </Button>
 
                                 {/* Notifications */}
-                                <Tooltip title="الإشعارات">
+                                <Tooltip title="Notifications">
                                     <IconButton
                                         color="inherit"
                                         onClick={handleNotifications}
@@ -200,7 +204,7 @@ const Navbar = () => {
                                 </Tooltip>
 
                                 {/* User Menu */}
-                                <Tooltip title="الحساب">
+                                <Tooltip title="Account">
                                     <IconButton
                                         size="large"
                                         onClick={handleMenu}
@@ -241,27 +245,27 @@ const Navbar = () => {
                                 >
                                     <Box sx={{ p: 2, pb: 1 }}>
                                         <Typography variant="h6" fontWeight={600}>
-                                            الإشعارات
+                                            Notifications
                                         </Typography>
                                     </Box>
                                     <Divider />
                                     <MenuItem onClick={handleCloseNotifications}>
                                         <Box>
                                             <Typography variant="body2" fontWeight={500}>
-                                                طلب انضمام جديد
+                                                New join request
                                             </Typography>
                                             <Typography variant="caption" color="text.secondary">
-                                                منذ 5 دقائق
+                                                5 minutes ago
                                             </Typography>
                                         </Box>
                                     </MenuItem>
                                     <MenuItem onClick={handleCloseNotifications}>
                                         <Box>
                                             <Typography variant="body2" fontWeight={500}>
-                                                تم قبولك في فريق
+                                                Team invite accepted
                                             </Typography>
                                             <Typography variant="caption" color="text.secondary">
-                                                منذ ساعة
+                                                1 hour ago
                                             </Typography>
                                         </Box>
                                     </MenuItem>
@@ -270,7 +274,7 @@ const Navbar = () => {
                                         onClick={handleCloseNotifications}
                                         sx={{ justifyContent: 'center', color: 'primary.main' }}
                                     >
-                                        عرض جميع الإشعارات
+                                        View all notifications
                                     </MenuItem>
                                 </Menu>
 
@@ -290,7 +294,7 @@ const Navbar = () => {
                                 >
                                     <Box sx={{ p: 2, pb: 1 }}>
                                         <Typography variant="subtitle1" fontWeight={600}>
-                                            {user?.name || 'المستخدم'}
+                                            {user?.name || 'Member'}
                                         </Typography>
                                         <Typography variant="caption" color="text.secondary">
                                             {user?.email || ''}
@@ -306,7 +310,7 @@ const Navbar = () => {
                                         <ListItemIcon>
                                             <Person fontSize="small" />
                                         </ListItemIcon>
-                                        الملف الشخصي
+                                        Profile
                                     </MenuItem>
                                     <MenuItem 
                                         onClick={() => {
@@ -317,7 +321,7 @@ const Navbar = () => {
                                         <ListItemIcon>
                                             <Mail fontSize="small" />
                                         </ListItemIcon>
-                                        الطلبات
+                                        Requests
                                     </MenuItem>
                                     <Divider />
                                     <MenuItem 
@@ -327,7 +331,7 @@ const Navbar = () => {
                                         <ListItemIcon>
                                             <Logout fontSize="small" color="error" />
                                         </ListItemIcon>
-                                        تسجيل خروج
+                                        Sign out
                                     </MenuItem>
                                 </Menu>
                             </>
@@ -340,7 +344,7 @@ const Navbar = () => {
                                     startIcon={<Home />}
                                     sx={navButtonStyle('/')}
                                 >
-                                    الرئيسية
+                                    Home
                                 </Button>
                                 <Button 
                                     variant="outlined"
@@ -348,35 +352,35 @@ const Navbar = () => {
                                     to="/login"
                                     sx={{
                                         mx: 1,
-                                        color: 'white',
-                                        borderColor: 'white',
+                                        color: '#f8fafc',
+                                        borderColor: 'rgba(148, 163, 184, 0.4)',
                                         borderRadius: '8px',
                                         px: 3,
                                         '&:hover': {
-                                            borderColor: 'white',
-                                            backgroundColor: 'rgba(255,255,255,0.1)'
+                                            borderColor: '#7f5af0',
+                                            backgroundColor: 'rgba(127,90,240,0.16)'
                                         }
                                     }}
                                 >
-                                    تسجيل دخول
+                                    Login
                                 </Button>
                                 <Button 
                                     variant="contained"
                                     component={Link} 
                                     to="/register"
                                     sx={{
-                                        background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                                        color: 'white',
+                                        background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)',
+                                        color: '#050714',
                                         borderRadius: '8px',
                                         px: 3,
-                                        boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                                        boxShadow: '0 16px 45px rgba(127, 90, 240, 0.35)',
                                         '&:hover': {
-                                            boxShadow: '0 6px 20px rgba(0,0,0,0.3)',
+                                            boxShadow: '0 22px 60px rgba(127, 90, 240, 0.45)',
                                             transform: 'translateY(-2px)'
                                         }
                                     }}
                                 >
-                                    تسجيل جديد
+                                    Join now
                                 </Button>
                             </>
                         )}
