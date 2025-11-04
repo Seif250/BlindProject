@@ -38,8 +38,33 @@ const Login = () => {
                     <Typography variant="body1" sx={{ color: 'rgba(226, 232, 240, 0.7)', mb: 4, textAlign: 'center' }}>Sign in to continue</Typography>
                     {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 2, background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#fca5a5' }}>{error}</Alert>}
                     <Box component="form" onSubmit={handleSubmit}>
-                        <TextField fullWidth label="Email" name="email" type="email" required value={formData.email} onChange={handleChange} InputProps={{ startAdornment: <InputAdornment position="start"><Email sx={{ color: 'rgba(127, 90, 240, 0.7)' }} /></InputAdornment> }} sx={{ mb: 3 }} />
-                        <TextField fullWidth label="Password" name="password" type={showPassword ? 'text' : 'password'} required value={formData.password} onChange={handleChange} InputProps={{ startAdornment: <InputAdornment position="start"><Lock sx={{ color: 'rgba(127, 90, 240, 0.7)' }} /></InputAdornment>, endAdornment: <InputAdornment position="end"><IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(226, 232, 240, 0.5)' }}>{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment> }} sx={{ mb: 4 }} />
+                        <TextField 
+                            fullWidth 
+                            label="Email" 
+                            name="email" 
+                            type="email" 
+                            required 
+                            value={formData.email} 
+                            onChange={handleChange} 
+                            InputLabelProps={{ shrink: true }}
+                            InputProps={{ startAdornment: <InputAdornment position="start"><Email sx={{ color: 'rgba(127, 90, 240, 0.7)' }} /></InputAdornment> }} 
+                            sx={{ mb: 3 }} 
+                        />
+                        <TextField 
+                            fullWidth 
+                            label="Password" 
+                            name="password" 
+                            type={showPassword ? 'text' : 'password'} 
+                            required 
+                            value={formData.password} 
+                            onChange={handleChange} 
+                            InputLabelProps={{ shrink: true }}
+                            InputProps={{ 
+                                startAdornment: <InputAdornment position="start"><Lock sx={{ color: 'rgba(127, 90, 240, 0.7)' }} /></InputAdornment>, 
+                                endAdornment: <InputAdornment position="end"><IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(226, 232, 240, 0.5)' }}>{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment> 
+                            }} 
+                            sx={{ mb: 4 }} 
+                        />
                         <Button type="submit" fullWidth variant="contained" disabled={loading} endIcon={<ArrowForward />} sx={{ py: 1.8, fontSize: '1.1rem', fontWeight: 600, borderRadius: 3, background: 'linear-gradient(135deg, #7f5af0 0%, #5b27d1 100%)', boxShadow: '0 8px 32px rgba(127, 90, 240, 0.4)', textTransform: 'none', mb: 3, '&:hover': { background: 'linear-gradient(135deg, #916bff 0%, #6a37e9 100%)', boxShadow: '0 12px 40px rgba(127, 90, 240, 0.6)', transform: 'translateY(-2px)' }, transition: 'all 0.3s ease' }}>{loading ? 'Signing in...' : 'Sign In'}</Button>
                         <Box sx={{ textAlign: 'center' }}>
                             <Typography variant="body2" sx={{ color: 'rgba(226, 232, 240, 0.6)' }}>Don't have an account? <Link component={RouterLink} to="/register" sx={{ color: '#7f5af0', textDecoration: 'none', fontWeight: 600, '&:hover': { textDecoration: 'underline' } }}>Create Account</Link></Typography>
