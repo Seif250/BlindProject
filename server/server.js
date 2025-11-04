@@ -10,6 +10,7 @@ const app = express();
 const allowedOrigins = [
     'http://localhost:3000',
     'https://blind-project.vercel.app', // Vercel Frontend URL
+    'https://blindproject.pages.dev', // Cloudflare Pages URL
     process.env.FRONTEND_URL
 ].filter(Boolean);
 
