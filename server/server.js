@@ -24,8 +24,11 @@ app.use(cors({
             return callback(null, true);
         }
         
-        // In production, check against allowedOrigins
-        if (allowedOrigins.indexOf(origin) !== -1) {
+        // Check if origin is in allowedOrigins or matches Cloudflare Pages pattern
+        const isAllowed = allowedOrigins.indexOf(origin) !== -1 || 
+                         origin.endsWith('.blindproject.pages.dev');
+        
+        if (isAllowed) {
             callback(null, true);
         } else {
             console.log(`CORS blocked: ${origin}`);
