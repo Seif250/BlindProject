@@ -11,17 +11,38 @@ const UserProfile = () => {
     const [error, setError] = useState('');
 
     useEffect(() => {
+        let isMounted = true;
+        setLoading(true);
+        setError('');
+
         const fetchUser = async () => {
             try {
                 const res = await api.get(`/api/users/${userId}`);
-                setUser(res.data);
+                if (isMounted) {
+                    setUser(res.data);
+                }
             } catch (err) {
-                setError('Failed to load user profile');
+                if (isMounted) {
+                    setError('Failed to load user profile');
+                    setUser(null);
+                }
             } finally {
-                setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
         };
-        fetchUser();
+
+        if (userId) {
+            fetchUser();
+        } else {
+            setLoading(false);
+            setUser(null);
+        }
+
+        return () => {
+            isMounted = false;
+        };
     }, [userId]);
 
     if (loading) return <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(180deg, #050714 0%, #0a0f1e 100%)' }}><CircularProgress sx={{ color: '#7f5af0' }} /></Box>;
