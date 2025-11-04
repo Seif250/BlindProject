@@ -24,7 +24,7 @@ const SearchTeams = () => {
 
     const handleJoin = async (teamId) => {
         try {
-            await api.post(/api/teams//request);
+            await api.post(`/api/teams/${teamId}/request`);
             setSuccess('Join request sent!');
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
@@ -53,7 +53,7 @@ const SearchTeams = () => {
                                         <Chip icon={<Person />} label={team.subject} size="small" sx={{ mb: 2, background: 'rgba(127, 90, 240, 0.2)', color: '#7f5af0', fontWeight: 600 }} />
                                         <Typography variant="body2" sx={{ color: 'rgba(226, 232, 240, 0.7)', mb: 2, minHeight: 60 }}>{team.description || 'No description'}</Typography>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                            <Chip icon={<Group />} label={${team.currentMembers}/} size="small" sx={{ background: 'rgba(44, 198, 125, 0.2)', color: '#2cb67d', fontWeight: 600 }} />
+                                            <Chip icon={<Group />} label={`${team.currentMembers}/${team.maxMembers}`} size="small" sx={{ background: 'rgba(44, 198, 125, 0.2)', color: '#2cb67d', fontWeight: 600 }} />
                                             <Typography variant="caption" sx={{ color: 'rgba(226, 232, 240, 0.5)' }}>by {team.creator?.name || 'Unknown'}</Typography>
                                         </Box>
                                         <Button fullWidth variant="contained" onClick={() => handleJoin(team._id)} sx={{ background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', color: '#fff', fontWeight: 600, '&:hover': { background: 'linear-gradient(135deg, #6b47d6 0%, #25a569 100%)' } }}>Request to Join</Button>

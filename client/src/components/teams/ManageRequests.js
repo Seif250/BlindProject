@@ -24,7 +24,7 @@ const ManageRequests = () => {
 
     const handleAccept = async (requestId) => {
         try {
-            await api.post(/api/teams/requests//accept);
+            await api.post(`/api/teams/requests/${requestId}/accept`);
             setSuccess('Request accepted!');
             fetchRequests();
             setTimeout(() => setSuccess(''), 3000);
@@ -35,7 +35,7 @@ const ManageRequests = () => {
 
     const handleReject = async (requestId) => {
         try {
-            await api.post(/api/teams/requests//reject);
+            await api.post(`/api/teams/requests/${requestId}/reject`);
             setSuccess('Request rejected');
             fetchRequests();
             setTimeout(() => setSuccess(''), 3000);
@@ -64,7 +64,7 @@ const ManageRequests = () => {
                                     <Typography variant="body2" sx={{ color: 'rgba(226, 232, 240, 0.6)', mb: 1 }}>{req.user?.email}</Typography>
                                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                                         {req.user?.department && <Chip label={req.user.department} size="small" sx={{ background: 'rgba(127, 90, 240, 0.2)', color: '#7f5af0' }} />}
-                                        {req.user?.year && <Chip label={Year } size="small" sx={{ background: 'rgba(44, 198, 125, 0.2)', color: '#2cb67d' }} />}
+                                        {req.user?.year && <Chip label={`Year ${req.user.year}`} size="small" sx={{ background: 'rgba(44, 198, 125, 0.2)', color: '#2cb67d' }} />}
                                     </Box>
                                 </Box>
                                 <Box sx={{ display: 'flex', gap: 1 }}>

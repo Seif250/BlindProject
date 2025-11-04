@@ -14,7 +14,7 @@ const UserProfile = () => {
 
     const fetchUser = async () => {
         try {
-            const res = await api.get(/api/users/);
+            const res = await api.get(`/api/users/${userId}`);
             setUser(res.data);
         } catch (err) {
             setError('Failed to load user profile');

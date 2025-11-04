@@ -25,7 +25,7 @@ const MyTeam = () => {
     const handleLeave = async () => {
         if (!window.confirm('Are you sure you want to leave this team?')) return;
         try {
-            await api.delete(/api/teams//leave);
+            await api.delete(`/api/teams/${team._id}/leave`);
             setSuccess('Left team successfully');
             setTimeout(() => window.location.reload(), 1500);
         } catch (err) {
@@ -36,7 +36,7 @@ const MyTeam = () => {
     const handleRemove = async (userId) => {
         if (!window.confirm('Remove this member?')) return;
         try {
-            await api.delete(/api/teams//members/);
+            await api.delete(`/api/teams/${team._id}/members/${userId}`);
             setSuccess('Member removed');
             fetchTeam();
         } catch (err) {
@@ -59,7 +59,7 @@ const MyTeam = () => {
                         <CardContent sx={{ p: 4 }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                                 <Typography variant="h4" sx={{ fontWeight: 700, color: '#e2e8f0' }}>{team.name}</Typography>
-                                <Chip icon={<Group />} label={${team.currentMembers}/} sx={{ background: 'rgba(44, 198, 125, 0.2)', color: '#2cb67d', fontWeight: 600 }} />
+                                <Chip icon={<Group />} label={`${team.currentMembers}/${team.maxMembers}`} sx={{ background: 'rgba(44, 198, 125, 0.2)', color: '#2cb67d', fontWeight: 600 }} />
                             </Box>
                             <Chip label={team.subject} sx={{ mb: 2, background: 'rgba(127, 90, 240, 0.2)', color: '#7f5af0', fontWeight: 600 }} />
                             <Typography variant="body1" sx={{ color: 'rgba(226, 232, 240, 0.7)', mb: 3 }}>{team.description || 'No description'}</Typography>
