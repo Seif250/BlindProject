@@ -21,6 +21,180 @@ const getMemberUserId = (member) => {
     return null;
 };
 
+const normalizeString = (value) => typeof value === 'string' ? value.trim() : '';
+
+const toStringArray = (value) => {
+    if (!value) return [];
+    if (Array.isArray(value)) {
+        return value
+            .map((item) => normalizeString(item && item.name ? item.name : item))
+            .filter(Boolean);
+    }
+    if (typeof value === 'string') {
+        return value
+            .split(',')
+            .map((item) => normalizeString(item))
+            .filter(Boolean);
+    }
+    return [];
+};
+
+const toSkillArray = (value) => {
+    if (!value) return [];
+    if (Array.isArray(value)) {
+        return value
+            .map((item) => {
+                if (typeof item === 'string') {
+                    return { name: normalizeString(item), level: 'intermediate' };
+                }
+                if (item && item.name) {
+                    return {
+                        name: normalizeString(item.name),
+                        level: item.level || 'intermediate'
+                    };
+                }
+                return null;
+            })
+            .filter((item) => item && item.name);
+    }
+    if (typeof value === 'string') {
+        return value
+            .split(',')
+            .map((item) => normalizeString(item))
+            .filter(Boolean)
+            .map((name) => ({ name, level: 'intermediate' }));
+    }
+    return [];
+};
+
+const toTechnologyArray = (value) => {
+    if (!value) return [];
+    if (Array.isArray(value)) {
+        return value
+            .map((item) => {
+                if (typeof item === 'string') {
+                    return { name: normalizeString(item), category: 'other' };
+                }
+                if (item && item.name) {
+                    return {
+                        name: normalizeString(item.name),
+                        category: item.category || 'other'
+                    };
+                }
+                return null;
+            })
+            .filter((item) => item && item.name);
+    }
+    if (typeof value === 'string') {
+        return value
+            .split(',')
+            .map((item) => normalizeString(item))
+            .filter(Boolean)
+            .map((name) => ({ name, category: 'other' }));
+    }
+    return [];
+};
+
+const toMilestoneArray = (value) => {
+    if (!value) return [];
+    const input = Array.isArray(value) ? value : (() => {
+        if (typeof value === 'string') {
+            try {
+                const parsed = JSON.parse(value);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                return [];
+            }
+        }
+        return [];
+    })();
+
+    return input
+        .map((item) => {
+            if (!item || typeof item !== 'object') {
+                return null;
+            }
+            const title = normalizeString(item.title);
+            if (!title) {
+                return null;
+            }
+            return {
+                title,
+                description: normalizeString(item.description || ''),
+                deadline: item.deadline ? new Date(item.deadline) : undefined,
+                completed: Boolean(item.completed),
+                completedDate: item.completedDate ? new Date(item.completedDate) : undefined
+            };
+        })
+        .filter(Boolean);
+};
+
+const toResourceArray = (value) => {
+    if (!value) return [];
+    const input = Array.isArray(value) ? value : (() => {
+        if (typeof value === 'string') {
+            try {
+                const parsed = JSON.parse(value);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                return [];
+            }
+        }
+        return [];
+    })();
+
+    return input
+        .map((item) => {
+            if (!item || typeof item !== 'object') {
+                return null;
+            }
+            const name = normalizeString(item.name || item.title);
+            const url = normalizeString(item.url || item.link);
+            if (!name || !url) {
+                return null;
+            }
+            return {
+                name,
+                url,
+                type: item.type || 'other'
+            };
+        })
+        .filter(Boolean);
+};
+
+const toRoleArray = (value) => {
+    if (!value) return [];
+    const input = Array.isArray(value) ? value : (() => {
+        if (typeof value === 'string') {
+            try {
+                const parsed = JSON.parse(value);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                return [];
+            }
+        }
+        return [];
+    })();
+
+    return input
+        .map((item) => {
+            if (!item || typeof item !== 'object') {
+                return null;
+            }
+            const title = normalizeString(item.title);
+            if (!title) {
+                return null;
+            }
+            return {
+                title,
+                description: normalizeString(item.description || ''),
+                required: item.required !== undefined ? Boolean(item.required) : true,
+                filled: Boolean(item.filled)
+            };
+        })
+        .filter(Boolean);
+};
+
 const isAcceptedStatus = (member) => {
     const status = member && member.status ? member.status : 'accepted';
     return status === 'accepted';
@@ -50,8 +224,40 @@ const formatTeam = (team, currentUserId) => {
         creator: team.creator ? {
             _id: team.creator._id,
             name: team.creator.name,
-            email: team.creator.email
+            email: team.creator.email,
+            whatsapp: team.creator.whatsapp || team.whatsapp || null,
+            department: team.creator.department || null,
+            year: team.creator.year || null
         } : null,
+        whatsapp: team.whatsapp || (team.creator ? team.creator.whatsapp : null) || null,
+        difficulty: team.difficulty || 'intermediate',
+        tags: Array.isArray(team.tags) ? team.tags : [],
+        requiredSkills: Array.isArray(team.requiredSkills) ? team.requiredSkills : [],
+        technologies: Array.isArray(team.technologies)
+            ? team.technologies.map((tech) => ({
+                name: tech.name,
+                category: tech.category || 'other'
+            }))
+            : [],
+        meetingLink: team.meetingLink || '',
+        timeline: team.timeline ? {
+            startDate: team.timeline.startDate || null,
+            expectedEndDate: team.timeline.expectedEndDate || null,
+            actualEndDate: team.timeline.actualEndDate || null
+        } : { startDate: null, expectedEndDate: null, actualEndDate: null },
+        milestones: Array.isArray(team.milestones) ? team.milestones : [],
+        roles: Array.isArray(team.roles) ? team.roles : [],
+        status: team.status || 'recruiting',
+        visibility: team.visibility || 'public',
+        isOpen: team.isOpen,
+        resources: Array.isArray(team.resources) ? team.resources : [],
+        ratings: {
+            average: team.averageRating || 0,
+            count: Array.isArray(team.ratings) ? team.ratings.length : 0
+        },
+        pendingRequestsCount: pendingMembers.length,
+        createdAt: team.createdAt,
+        updatedAt: team.updatedAt,
         members: acceptedMembers.map((member) => ({
             _id: member.user && member.user._id ? member.user._id.toString() : member._id.toString(),
             name: member.user && member.user.name ? member.user.name : 'Unknown',
@@ -75,7 +281,24 @@ const formatTeam = (team, currentUserId) => {
 
 router.post('/', auth, async (req, res) => {
     try {
-        const { name, subject, maxMembers, description } = req.body;
+        const {
+            name,
+            subject,
+            maxMembers,
+            description,
+            difficulty,
+            tags,
+            requiredSkills,
+            technologies,
+            meetingLink,
+            startDate,
+            expectedEndDate,
+            visibility,
+            status,
+            resources,
+            milestones,
+            roles
+        } = req.body;
 
         if (!name || !maxMembers || !description) {
             return res.status(400).json({ message: 'Please fill in all required fields' });
@@ -99,20 +322,35 @@ router.post('/', auth, async (req, res) => {
             projectName: name.trim(),
             description: description.trim(),
             category: subject ? subject.trim() : 'other',
-            tags: subject ? [subject.trim()] : [],
+            tags: (() => {
+                const subjectTags = subject ? [subject.trim()] : [];
+                const customTags = toStringArray(tags);
+                return Array.from(new Set([...subjectTags, ...customTags]));
+            })(),
+            difficulty: difficulty || 'intermediate',
+            requiredSkills: toStringArray(requiredSkills),
+            technologies: toTechnologyArray(technologies),
+            meetingLink: normalizeString(meetingLink) || undefined,
             maxMembers: parsedMax,
             currentMembersCount: 1,
             whatsapp: creator.whatsapp,
             creator: creator._id,
+            roles: toRoleArray(roles),
             members: [{
                 user: creator._id,
                 role: 'Owner',
                 status: 'accepted',
                 joinedAt: new Date()
             }],
-            status: 'recruiting',
-            visibility: 'public',
-            isOpen: true
+            status: status || 'recruiting',
+            visibility: visibility || 'public',
+            isOpen: true,
+            timeline: (startDate || expectedEndDate) ? {
+                startDate: startDate ? new Date(startDate) : undefined,
+                expectedEndDate: expectedEndDate ? new Date(expectedEndDate) : undefined
+            } : undefined,
+            milestones: toMilestoneArray(milestones),
+            resources: toResourceArray(resources)
         });
 
         await team.save();
@@ -381,6 +619,23 @@ router.delete('/:teamId/members/:userId', auth, async (req, res) => {
     } catch (error) {
         console.error('Remove team member error:', error);
         res.status(500).json({ message: 'Failed to remove member' });
+    }
+});
+
+router.get('/:teamId', auth, async (req, res) => {
+    try {
+        const { teamId } = req.params;
+        const team = await populateTeamQuery(Team.findById(teamId));
+
+        if (!team) {
+            return res.status(404).json({ message: 'Team not found' });
+        }
+
+        recalcTeamState(team);
+        res.json(formatTeam(team, req.user.userId));
+    } catch (error) {
+        console.error('Get team details error:', error);
+        res.status(500).json({ message: 'Failed to fetch team details' });
     }
 });
 
