@@ -1,312 +1,52 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { 
-    TextField, 
-    Button, 
-    Container, 
-    Typography, 
-    Box, 
-    Alert,
-    Link,
-    InputAdornment,
-    IconButton,
-    Divider,
-    Paper
-} from '@mui/material';
-import { 
-    Visibility, 
-    VisibilityOff, 
-    Email, 
-    Lock,
-    Login as LoginIcon 
-} from '@mui/icons-material';
+import { TextField, Button, Container, Typography, Box, Alert, Link, InputAdornment, IconButton } from '@mui/material';
+import { Visibility, VisibilityOff, Email, Lock, ArrowForward } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
 
 const Login = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
-    const [formData, setFormData] = useState({
-        email: '',
-        password: ''
-    });
+    const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
+    const handleChange = (e) => { setFormData({ ...formData, [e.target.name]: e.target.value }); };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-        setSuccess('');
         setLoading(true);
-        
         try {
             const response = await api.post('/auth/login', formData);
             login(response.data.user, response.data.token);
-            setSuccess('Signed in successfully! Redirecting...');
-            setTimeout(() => {
-                navigate('/teams');
-            }, 1000);
+            navigate('/teams');
         } catch (err) {
-            setError(err.response?.data?.message || 'Something went wrong while signing in.');
-            setTimeout(() => setError(''), 5000);
+            setError(err.response?.data?.message || 'Invalid credentials');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <Box
-            sx={{
-                minHeight: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                py: 4
-            }}
-        >
-            <Container component="main" maxWidth="xs">
-                <Paper
-                    elevation={10}
-                    sx={{
-                        p: 4,
-                        borderRadius: '25px',
-                        background: 'rgba(255, 255, 255, 0.95)',
-                        backdropFilter: 'blur(10px)',
-                        boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
-                    }}
-                >
-                    {/* Logo */}
-                    <Box sx={{ textAlign: 'center', mb: 3 }}>
-                        <Box
-                            sx={{
-                                width: 80,
-                                height: 80,
-                                borderRadius: '20px',
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '40px',
-                                margin: '0 auto',
-                                mb: 2,
-                                boxShadow: '0 10px 30px rgba(102, 126, 234, 0.4)'
-                            }}
-                        >
-                            🎓
-                        </Box>
-                        <Typography 
-                            component="h1" 
-                            variant="h4" 
-                            fontWeight={700}
-                            sx={{
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                mb: 1
-                            }}
-                        >
-                            Sign in
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            Welcome back! Sign in to keep building glowing teams.
-                        </Typography>
-                    </Box>
-
-                    {error && (
-                        <Alert 
-                            severity="error" 
-                            sx={{ 
-                                mb: 2,
-                                borderRadius: '12px',
-                                '& .MuiAlert-icon': {
-                                    fontSize: 24
-                                }
-                            }}
-                        >
-                            {error}
-                        </Alert>
-                    )}
-
-                    {success && (
-                        <Alert 
-                            severity="success" 
-                            sx={{ 
-                                mb: 2,
-                                borderRadius: '12px',
-                                '& .MuiAlert-icon': {
-                                    fontSize: 24
-                                }
-                            }}
-                        >
-                            {success}
-                        </Alert>
-                    )}
-
+        <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(180deg, #050714 0%, #0a0f1e 100%)', py: 4 }}>
+            <Container maxWidth="sm">
+                <Box sx={{ p: { xs: 4, sm: 6 }, borderRadius: 4, background: 'rgba(12, 17, 31, 0.8)', border: '1px solid rgba(127, 90, 240, 0.3)', backdropFilter: 'blur(10px)', boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)' }}>
+                    <Typography variant="h3" sx={{ fontWeight: 700, background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', mb: 1, textAlign: 'center' }}>Welcome Back</Typography>
+                    <Typography variant="body1" sx={{ color: 'rgba(226, 232, 240, 0.7)', mb: 4, textAlign: 'center' }}>Sign in to continue</Typography>
+                    {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 2, background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#fca5a5' }}>{error}</Alert>}
                     <Box component="form" onSubmit={handleSubmit}>
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="Email"
-                            name="email"
-                            autoComplete="email"
-                            autoFocus
-                            value={formData.email}
-                            onChange={handleChange}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <Email color="primary" />
-                                    </InputAdornment>
-                                ),
-                            }}
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    borderRadius: '12px',
-                                    '&:hover fieldset': {
-                                        borderColor: 'primary.main',
-                                    },
-                                }
-                            }}
-                        />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label="Password"
-                            type={showPassword ? 'text' : 'password'}
-                            id="password"
-                            autoComplete="current-password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <Lock color="primary" />
-                                    </InputAdornment>
-                                ),
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            edge="end"
-                                        >
-                                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    borderRadius: '12px',
-                                    '&:hover fieldset': {
-                                        borderColor: 'primary.main',
-                                    },
-                                }
-                            }}
-                        />
-
-                        <Box sx={{ textAlign: 'left', mt: 1 }}>
-                            <Link
-                                component={RouterLink}
-                                to="/forgot-password"
-                                variant="body2"
-                                sx={{
-                                    color: 'primary.main',
-                                    textDecoration: 'none',
-                                    '&:hover': {
-                                        textDecoration: 'underline'
-                                    }
-                                }}
-                            >
-                                Forgot your password?
-                            </Link>
-                        </Box>
-
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            disabled={loading}
-                            startIcon={<LoginIcon />}
-                            sx={{
-                                mt: 3,
-                                mb: 2,
-                                py: 1.5,
-                                borderRadius: '12px',
-                                fontSize: '1.1rem',
-                                fontWeight: 600,
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                boxShadow: '0 8px 20px rgba(102, 126, 234, 0.4)',
-                                transition: 'all 0.3s ease',
-                                '&:hover': {
-                                    boxShadow: '0 12px 30px rgba(102, 126, 234, 0.5)',
-                                    transform: 'translateY(-2px)'
-                                },
-                                '&:disabled': {
-                                    background: 'rgba(0, 0, 0, 0.12)'
-                                }
-                            }}
-                        >
-                            {loading ? 'Signing you in...' : 'Sign in'}
-                        </Button>
-
-                        <Divider sx={{ my: 2 }}>
-                            <Typography variant="body2" color="text.secondary">
-                                or
-                            </Typography>
-                        </Divider>
-
+                        <TextField fullWidth label="Email" name="email" type="email" required value={formData.email} onChange={handleChange} InputProps={{ startAdornment: <InputAdornment position="start"><Email sx={{ color: 'rgba(127, 90, 240, 0.7)' }} /></InputAdornment> }} sx={{ mb: 3 }} />
+                        <TextField fullWidth label="Password" name="password" type={showPassword ? 'text' : 'password'} required value={formData.password} onChange={handleChange} InputProps={{ startAdornment: <InputAdornment position="start"><Lock sx={{ color: 'rgba(127, 90, 240, 0.7)' }} /></InputAdornment>, endAdornment: <InputAdornment position="end"><IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(226, 232, 240, 0.5)' }}>{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment> }} sx={{ mb: 4 }} />
+                        <Button type="submit" fullWidth variant="contained" disabled={loading} endIcon={<ArrowForward />} sx={{ py: 1.8, fontSize: '1.1rem', fontWeight: 600, borderRadius: 3, background: 'linear-gradient(135deg, #7f5af0 0%, #5b27d1 100%)', boxShadow: '0 8px 32px rgba(127, 90, 240, 0.4)', textTransform: 'none', mb: 3, '&:hover': { background: 'linear-gradient(135deg, #916bff 0%, #6a37e9 100%)', boxShadow: '0 12px 40px rgba(127, 90, 240, 0.6)', transform: 'translateY(-2px)' }, transition: 'all 0.3s ease' }}>{loading ? 'Signing in...' : 'Sign In'}</Button>
                         <Box sx={{ textAlign: 'center' }}>
-                            <Typography variant="body2" color="text.secondary">
-                                Don’t have an account yet?{' '}
-                                <Link
-                                    component={RouterLink}
-                                    to="/register"
-                                    sx={{
-                                        color: 'primary.main',
-                                        textDecoration: 'none',
-                                        fontWeight: 600,
-                                        '&:hover': {
-                                            textDecoration: 'underline'
-                                        }
-                                    }}
-                                >
-                                    Create one now
-                                </Link>
-                            </Typography>
-                        </Box>
-
-                        <Box sx={{ textAlign: 'center', mt: 3 }}>
-                            <Link
-                                component={RouterLink}
-                                to="/"
-                                variant="body2"
-                                sx={{
-                                    color: 'text.secondary',
-                                    textDecoration: 'none',
-                                    '&:hover': {
-                                        color: 'primary.main'
-                                    }
-                                }}
-                            >
-                                ← Back to homepage
-                            </Link>
+                            <Typography variant="body2" sx={{ color: 'rgba(226, 232, 240, 0.6)' }}>Don't have an account? <Link component={RouterLink} to="/register" sx={{ color: '#7f5af0', textDecoration: 'none', fontWeight: 600, '&:hover': { textDecoration: 'underline' } }}>Create Account</Link></Typography>
+                            <Link component={RouterLink} to="/" sx={{ display: 'inline-block', mt: 2, color: 'rgba(226, 232, 240, 0.5)', textDecoration: 'none', fontSize: '0.875rem', '&:hover': { color: '#7f5af0' } }}> Back to Home</Link>
                         </Box>
                     </Box>
-                </Paper>
+                </Box>
             </Container>
         </Box>
     );
