@@ -336,7 +336,7 @@ const Profile = () => {
 
                                 {user.languages.length > 0 && (
                                     <Box sx={{ mb: 3 }}>
-                                        <Typography variant="h6" sx={{ color: '#e2e8f0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}><Languages fontSize="small" /> Languages</Typography>
+                                        <Typography variant="h6" sx={{ color: '#e2e8f0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}><Language fontSize="small" /> Languages</Typography>
                                         <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
                                             {user.languages.map((language) => (
                                                 <Chip key={language.name} label={`${language.name} · ${language.proficiency}`} size="small" sx={{ background: 'rgba(56, 189, 248, 0.18)', color: '#38bdf8' }} />
