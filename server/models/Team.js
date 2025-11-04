@@ -13,7 +13,7 @@ const teamSchema = new mongoose.Schema({
     // تصنيف المشروع
     category: {
         type: String,
-        enum: ['web', 'mobile', 'desktop', 'ai', 'data', 'iot', 'game', 'other'],
+        trim: true,
         default: 'other'
     },
     tags: [String],
