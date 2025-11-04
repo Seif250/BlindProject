@@ -1,167 +1,82 @@
-import React, { useState, useEffect } from 'react';
-import {
-    Container,
-    Button,
-    Box,
-    Alert,
-    Avatar,
-    Stack,
-    Typography,
-    Divider
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
+﻿import React, { useState, useEffect } from 'react';
+import { Container, Box, Typography, List, ListItem, ListItemText, Button, Alert, CircularProgress, Avatar, Chip } from '@mui/material';
+import { Check, Close } from '@mui/icons-material';
 import api from '../../services/api';
-import {
-    PageWrapper,
-    PageHeader,
-    PageTitle,
-    PageSubtitle,
-    SectionCard,
-    SectionTitle,
-    HelperText,
-    AccentBadge,
-    InfoChip
-} from '../styled/StyledComponents';
-
-const RequestRow = styled(Box)(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    gap: theme.spacing(2),
-    padding: theme.spacing(2),
-    borderRadius: 18,
-    border: '1px solid rgba(15, 23, 42, 0.08)',
-    backgroundColor: 'rgba(15, 23, 42, 0.02)'
-}));
 
 const ManageRequests = () => {
-    const [teams, setTeams] = useState([]);
+    const [requests, setRequests] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
-    useEffect(() => {
-        fetchTeams();
-    }, []);
+    useEffect(() => { fetchRequests(); }, []);
 
-    const fetchTeams = async () => {
+    const fetchRequests = async () => {
         try {
-            const response = await api.get('/teams/created');
-            setTeams(response.data);
-        } catch (error) {
-            setError('Failed to load your teams.');
+            const res = await api.get('/api/teams/requests');
+            setRequests(res.data);
+        } catch (err) {
+            setError('Failed to load requests');
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleRequest = async (teamId, userId, status) => {
+    const handleAccept = async (requestId) => {
         try {
-            await api.patch(`/teams/member-status/${teamId}/${userId}`, { status });
-            setSuccess(`Request ${status === 'accepted' ? 'approved' : 'declined'} successfully.`);
-            setTimeout(() => setSuccess(''), 5000);
-            fetchTeams();
-        } catch (error) {
-            setError('Could not update the request status.');
-            setTimeout(() => setError(''), 5000);
+            await api.post(/api/teams/requests//accept);
+            setSuccess('Request accepted!');
+            fetchRequests();
+            setTimeout(() => setSuccess(''), 3000);
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to accept request');
         }
     };
+
+    const handleReject = async (requestId) => {
+        try {
+            await api.post(/api/teams/requests//reject);
+            setSuccess('Request rejected');
+            fetchRequests();
+            setTimeout(() => setSuccess(''), 3000);
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to reject request');
+        }
+    };
+
+    if (loading) return <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(180deg, #050714 0%, #0a0f1e 100%)' }}><CircularProgress sx={{ color: '#7f5af0' }} /></Box>;
 
     return (
-        <PageWrapper>
-            <Container maxWidth="lg">
-                <PageHeader>
-                    <AccentBadge>Team Management</AccentBadge>
-                    <PageTitle>Join Requests</PageTitle>
-                    <PageSubtitle>
-                        Keep an eye on new requests and respond instantly from one clear, glowing dashboard.
-                    </PageSubtitle>
-                </PageHeader>
-
-                <Stack spacing={3}>
-                    {error && <Alert severity="error">{error}</Alert>}
-                    {success && <Alert severity="success">{success}</Alert>}
-
-                    {teams.length === 0 && !error ? (
-                        <SectionCard>
-                            <SectionTitle variant="h6">No teams yet</SectionTitle>
-                            <HelperText>
-                                Create a team to start receiving join requests right here in a tidy list.
-                            </HelperText>
-                        </SectionCard>
-                    ) : (
-                        teams.map((team) => {
-                            const pendingMembers = (team.members || []).filter((member) => member.status === 'pending');
-
-                            return (
-                                <SectionCard key={team._id}>
-                                    <Stack spacing={2.5}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
-                                            <Box>
-                                                <SectionTitle variant="h6">{team.projectName}</SectionTitle>
-                                                {team.description && (
-                                                    <HelperText sx={{ maxWidth: 520 }}>
-                                                        {team.description}
-                                                    </HelperText>
-                                                )}
-                                            </Box>
-                                            <InfoChip label={`Team members: ${(team.members || []).filter(m => m.status === 'accepted').length}/${team.maxMembers || '-'}`} />
-                                        </Box>
-
-                                        <Divider sx={{ borderColor: 'rgba(15, 23, 42, 0.06)' }} />
-
-                                        <SectionTitle variant="subtitle1" sx={{ mb: 0 }}>
-                                            Pending join requests
-                                        </SectionTitle>
-
-                                        {pendingMembers.length === 0 ? (
-                                            <HelperText>
-                                                No pending requests at the moment. We will notify you as soon as a new one arrives.
-                                            </HelperText>
-                                        ) : (
-                                            <Stack spacing={2}>
-                                                {pendingMembers.map((member) => (
-                                                    <RequestRow key={member.user._id}>
-                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                            <Avatar src={member.user.image} alt={member.user.name} />
-                                                            <Box sx={{ textAlign: 'left' }}>
-                                                                <Typography sx={{ fontWeight: 600, color: '#0f172a' }}>
-                                                                    {member.user.name}
-                                                                </Typography>
-                                                                <HelperText>{member.user.email}</HelperText>
-                                                                <InfoChip label={`Requested role: ${member.role}`} sx={{ mt: 1 }} />
-                                                            </Box>
-                                                        </Box>
-                                                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
-                                                            <Button
-                                                                variant="contained"
-                                                                color="primary"
-                                                                startIcon={<CheckIcon />}
-                                                                onClick={() => handleRequest(team._id, member.user._id, 'accepted')}
-                                                            >
-                                                                Approve
-                                                            </Button>
-                                                            <Button
-                                                                variant="outlined"
-                                                                color="error"
-                                                                startIcon={<CloseIcon />}
-                                                                onClick={() => handleRequest(team._id, member.user._id, 'rejected')}
-                                                            >
-                                                                Decline
-                                                            </Button>
-                                                        </Stack>
-                                                    </RequestRow>
-                                                ))}
-                                            </Stack>
-                                        )}
-                                    </Stack>
-                                </SectionCard>
-                            );
-                        })
-                    )}
-                </Stack>
+        <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #050714 0%, #0a0f1e 100%)', pt: 12, pb: 8 }}>
+            <Container maxWidth="md">
+                <Typography variant="h3" sx={{ fontWeight: 700, background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', mb: 4, textAlign: 'center' }}>Join Requests</Typography>
+                {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+                {success && <Alert severity="success" sx={{ mb: 3 }}>{success}</Alert>}
+                {requests.length === 0 ? (
+                    <Typography variant="h6" sx={{ color: 'rgba(226, 232, 240, 0.5)', textAlign: 'center' }}>No pending requests</Typography>
+                ) : (
+                    <List>
+                        {requests.map(req => (
+                            <ListItem key={req._id} sx={{ background: 'rgba(12, 17, 31, 0.8)', border: '1px solid rgba(127, 90, 240, 0.3)', borderRadius: 4, mb: 2, p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Avatar sx={{ width: 56, height: 56, background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', fontSize: '1.5rem' }}>{req.user?.name?.[0] || 'U'}</Avatar>
+                                <Box sx={{ flex: 1 }}>
+                                    <Typography variant="h6" sx={{ fontWeight: 700, color: '#e2e8f0', mb: 0.5 }}>{req.user?.name || 'Unknown'}</Typography>
+                                    <Typography variant="body2" sx={{ color: 'rgba(226, 232, 240, 0.6)', mb: 1 }}>{req.user?.email}</Typography>
+                                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                                        {req.user?.department && <Chip label={req.user.department} size="small" sx={{ background: 'rgba(127, 90, 240, 0.2)', color: '#7f5af0' }} />}
+                                        {req.user?.year && <Chip label={Year } size="small" sx={{ background: 'rgba(44, 198, 125, 0.2)', color: '#2cb67d' }} />}
+                                    </Box>
+                                </Box>
+                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                    <Button variant="contained" startIcon={<Check />} onClick={() => handleAccept(req._id)} sx={{ background: 'linear-gradient(135deg, #2cb67d 0%, #16a34a 100%)', color: '#fff', fontWeight: 600, '&:hover': { background: 'linear-gradient(135deg, #25a569 0%, #15803d 100%)' } }}>Accept</Button>
+                                    <Button variant="outlined" startIcon={<Close />} onClick={() => handleReject(req._id)} sx={{ borderColor: '#ef4444', color: '#ef4444', '&:hover': { borderColor: '#dc2626', background: 'rgba(239, 68, 68, 0.1)' } }}>Reject</Button>
+                                </Box>
+                            </ListItem>
+                        ))}
+                    </List>
+                )}
             </Container>
-        </PageWrapper>
+        </Box>
     );
 };
 

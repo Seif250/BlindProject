@@ -1,387 +1,42 @@
-import React from 'react';
-import {
-    AppBar,
-    Toolbar,
-    Typography,
-    Button,
-    Box,
-    IconButton,
-    Menu,
-    MenuItem,
-    Avatar,
-    Badge,
-    Tooltip,
-    Divider,
-    ListItemIcon,
-    Container,
-    useTheme
-} from '@mui/material';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+﻿import React, { useState } from 'react';
+import { AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem, Avatar, Container } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import {
-    Notifications,
-    Logout,
-    Person,
-    Dashboard,
-    Search,
-    Group,
-    Home,
-    Mail
-} from '@mui/icons-material';
+import { Logout, Person, Home, Group, Search } from '@mui/icons-material';
 
 const Navbar = () => {
     const { isAuthenticated, user, logout } = useAuth();
     const navigate = useNavigate();
-    const location = useLocation();
-    const theme = useTheme();
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [notificationsAnchor, setNotificationsAnchor] = React.useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
 
-    const handleMenu = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleNotifications = (event) => {
-        setNotificationsAnchor(event.currentTarget);
-    };
-
-    const handleCloseNotifications = () => {
-        setNotificationsAnchor(null);
-    };
-
-    const handleLogout = () => {
-        logout();
-        handleClose();
-        navigate('/login');
-    };
-
-    const isActive = (path) => {
-        return location.pathname === path;
-    };
-
-    const navButtonStyle = (path) => ({
-        mx: 0.5,
-        px: 2,
-        py: 1,
-        borderRadius: '8px',
-        position: 'relative',
-        fontWeight: isActive(path) ? 600 : 400,
-        color: isActive(path) ? theme.palette.primary.main : 'inherit',
-        backgroundColor: isActive(path) 
-            ? 'rgba(255, 255, 255, 0.15)' 
-            : 'transparent',
-        transition: 'all 0.3s ease',
-        '&:hover': {
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-            transform: 'translateY(-2px)'
-        },
-        '&::after': isActive(path) ? {
-            content: '""',
-            position: 'absolute',
-            bottom: 0,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '60%',
-            height: '3px',
-            backgroundColor: theme.palette.primary.main,
-            borderRadius: '3px 3px 0 0'
-        } : {}
-    });
+    const handleMenu = (e) => setAnchorEl(e.currentTarget);
+    const handleClose = () => setAnchorEl(null);
+    const handleLogout = () => { logout(); navigate('/'); handleClose(); };
 
     return (
-        <AppBar 
-            position="sticky"
-            elevation={0}
-            sx={{
-                background: 'rgba(5, 9, 20, 0.82)',
-                backdropFilter: 'blur(22px)',
-                borderBottom: '1px solid rgba(148, 163, 184, 0.12)',
-                boxShadow: '0 22px 60px rgba(2, 6, 18, 0.55)'
-            }}
-        >
+        <AppBar position="sticky" sx={{ background: 'rgba(8, 12, 24, 0.9)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(127, 90, 240, 0.2)', boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)' }}>
             <Container maxWidth="xl">
-                <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
-                    {/* Logo */}
-                    <Box
-                        component={Link}
-                        to={isAuthenticated() ? "/teams" : "/"}
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            textDecoration: 'none',
-                            color: '#e2e8f0',
-                            gap: 1.5,
-                            cursor: 'pointer',
-                            transition: 'transform 0.3s ease, filter 0.3s ease',
-                            '&:hover': {
-                                transform: 'scale(1.03)',
-                                filter: 'brightness(1.1)'
-                            }
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                width: 46,
-                                height: 46,
-                                borderRadius: '14px',
-                                background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '24px',
-                                boxShadow: '0 20px 45px rgba(127, 90, 240, 0.38)'
-                            }}
-                        >
-                            🚀
-                        </Box>
-                        <Typography 
-                            variant="h6" 
-                            sx={{ 
-                                fontWeight: 700,
-                                fontSize: '1.28rem',
-                                letterSpacing: '0.08em',
-                                textTransform: 'uppercase',
-                                color: '#f8fafc'
-                            }}
-                        >
-                            Campus Teams Hub
-                        </Typography>
-                    </Box>
-
-                    {/* Navigation Links */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Toolbar sx={{ justifyContent: 'space-between' }}>
+                    <Typography variant="h6" component={Link} to="/" sx={{ fontWeight: 700, background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 1 }}>
+                         Campus Teams
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         {isAuthenticated() ? (
                             <>
-                                <Button 
-                                    color="inherit" 
-                                    component={Link} 
-                                    to="/teams"
-                                    startIcon={<Dashboard />}
-                                    sx={navButtonStyle('/teams')}
-                                >
-                                    Dashboard
-                                </Button>
-                                <Button 
-                                    color="inherit" 
-                                    component={Link} 
-                                    to="/teams/search"
-                                    startIcon={<Search />}
-                                    sx={navButtonStyle('/teams/search')}
-                                >
-                                    Discover Teams
-                                </Button>
-                                <Button 
-                                    color="inherit" 
-                                    component={Link} 
-                                    to="/teams/my-team"
-                                    startIcon={<Group />}
-                                    sx={navButtonStyle('/teams/my-team')}
-                                >
-                                    My Team
-                                </Button>
-
-                                {/* Notifications */}
-                                <Tooltip title="Notifications">
-                                    <IconButton
-                                        color="inherit"
-                                        onClick={handleNotifications}
-                                        sx={{
-                                            mx: 1,
-                                            transition: 'transform 0.3s ease',
-                                            '&:hover': {
-                                                transform: 'scale(1.1)'
-                                            }
-                                        }}
-                                    >
-                                        <Badge badgeContent={3} color="error">
-                                            <Notifications />
-                                        </Badge>
-                                    </IconButton>
-                                </Tooltip>
-
-                                {/* User Menu */}
-                                <Tooltip title="Account">
-                                    <IconButton
-                                        size="large"
-                                        onClick={handleMenu}
-                                        sx={{
-                                            ml: 1,
-                                            transition: 'transform 0.3s ease',
-                                            '&:hover': {
-                                                transform: 'scale(1.1)'
-                                            }
-                                        }}
-                                    >
-                                        <Avatar 
-                                            sx={{ 
-                                                width: 38, 
-                                                height: 38,
-                                                border: '2px solid white',
-                                                boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
-                                            }}
-                                        >
-                                            {user?.name?.charAt(0) || 'U'}
-                                        </Avatar>
-                                    </IconButton>
-                                </Tooltip>
-
-                                {/* Notifications Menu */}
-                                <Menu
-                                    anchorEl={notificationsAnchor}
-                                    open={Boolean(notificationsAnchor)}
-                                    onClose={handleCloseNotifications}
-                                    PaperProps={{
-                                        sx: {
-                                            mt: 1.5,
-                                            minWidth: 320,
-                                            borderRadius: '12px',
-                                            boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
-                                        }
-                                    }}
-                                >
-                                    <Box sx={{ p: 2, pb: 1 }}>
-                                        <Typography variant="h6" fontWeight={600}>
-                                            Notifications
-                                        </Typography>
-                                    </Box>
-                                    <Divider />
-                                    <MenuItem onClick={handleCloseNotifications}>
-                                        <Box>
-                                            <Typography variant="body2" fontWeight={500}>
-                                                New join request
-                                            </Typography>
-                                            <Typography variant="caption" color="text.secondary">
-                                                5 minutes ago
-                                            </Typography>
-                                        </Box>
-                                    </MenuItem>
-                                    <MenuItem onClick={handleCloseNotifications}>
-                                        <Box>
-                                            <Typography variant="body2" fontWeight={500}>
-                                                Team invite accepted
-                                            </Typography>
-                                            <Typography variant="caption" color="text.secondary">
-                                                1 hour ago
-                                            </Typography>
-                                        </Box>
-                                    </MenuItem>
-                                    <Divider />
-                                    <MenuItem 
-                                        onClick={handleCloseNotifications}
-                                        sx={{ justifyContent: 'center', color: 'primary.main' }}
-                                    >
-                                        View all notifications
-                                    </MenuItem>
-                                </Menu>
-
-                                {/* User Menu */}
-                                <Menu
-                                    anchorEl={anchorEl}
-                                    open={Boolean(anchorEl)}
-                                    onClose={handleClose}
-                                    PaperProps={{
-                                        sx: {
-                                            mt: 1.5,
-                                            minWidth: 220,
-                                            borderRadius: '12px',
-                                            boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
-                                        }
-                                    }}
-                                >
-                                    <Box sx={{ p: 2, pb: 1 }}>
-                                        <Typography variant="subtitle1" fontWeight={600}>
-                                            {user?.name || 'Member'}
-                                        </Typography>
-                                        <Typography variant="caption" color="text.secondary">
-                                            {user?.email || ''}
-                                        </Typography>
-                                    </Box>
-                                    <Divider />
-                                    <MenuItem 
-                                        onClick={() => {
-                                            handleClose();
-                                            navigate('/profile');
-                                        }}
-                                    >
-                                        <ListItemIcon>
-                                            <Person fontSize="small" />
-                                        </ListItemIcon>
-                                        Profile
-                                    </MenuItem>
-                                    <MenuItem 
-                                        onClick={() => {
-                                            handleClose();
-                                            navigate('/teams/requests');
-                                        }}
-                                    >
-                                        <ListItemIcon>
-                                            <Mail fontSize="small" />
-                                        </ListItemIcon>
-                                        Requests
-                                    </MenuItem>
-                                    <Divider />
-                                    <MenuItem 
-                                        onClick={handleLogout}
-                                        sx={{ color: 'error.main' }}
-                                    >
-                                        <ListItemIcon>
-                                            <Logout fontSize="small" color="error" />
-                                        </ListItemIcon>
-                                        Sign out
-                                    </MenuItem>
+                                <Button component={Link} to="/" startIcon={<Home />} sx={{ color: '#e2e8f0', '&:hover': { color: '#7f5af0' } }}>Home</Button>
+                                <Button component={Link} to="/teams" startIcon={<Group />} sx={{ color: '#e2e8f0', '&:hover': { color: '#7f5af0' } }}>Teams</Button>
+                                <Button component={Link} to="/teams/search" startIcon={<Search />} sx={{ color: '#e2e8f0', '&:hover': { color: '#7f5af0' } }}>Search</Button>
+                                <IconButton onClick={handleMenu} size="small"><Avatar sx={{ width: 36, height: 36, background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', fontSize: '0.9rem' }}>{user?.name?.charAt(0)}</Avatar></IconButton>
+                                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose} PaperProps={{ sx: { background: 'rgba(12, 17, 31, 0.95)', border: '1px solid rgba(127, 90, 240, 0.3)', backdropFilter: 'blur(10px)', mt: 1 } }}>
+                                    <MenuItem onClick={() => { navigate('/profile'); handleClose(); }} sx={{ color: '#e2e8f0', '&:hover': { background: 'rgba(127, 90, 240, 0.1)' } }}><Person fontSize="small" sx={{ mr: 1.5 }} />Profile</MenuItem>
+                                    <MenuItem onClick={handleLogout} sx={{ color: '#ef4444', '&:hover': { background: 'rgba(239, 68, 68, 0.1)' } }}><Logout fontSize="small" sx={{ mr: 1.5 }} />Logout</MenuItem>
                                 </Menu>
                             </>
                         ) : (
                             <>
-                                <Button 
-                                    color="inherit" 
-                                    component={Link} 
-                                    to="/"
-                                    startIcon={<Home />}
-                                    sx={navButtonStyle('/')}
-                                >
-                                    Home
-                                </Button>
-                                <Button 
-                                    variant="outlined"
-                                    component={Link} 
-                                    to="/login"
-                                    sx={{
-                                        mx: 1,
-                                        color: '#f8fafc',
-                                        borderColor: 'rgba(148, 163, 184, 0.4)',
-                                        borderRadius: '8px',
-                                        px: 3,
-                                        '&:hover': {
-                                            borderColor: '#7f5af0',
-                                            backgroundColor: 'rgba(127,90,240,0.16)'
-                                        }
-                                    }}
-                                >
-                                    Login
-                                </Button>
-                                <Button 
-                                    variant="contained"
-                                    component={Link} 
-                                    to="/register"
-                                    sx={{
-                                        background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)',
-                                        color: '#050714',
-                                        borderRadius: '8px',
-                                        px: 3,
-                                        boxShadow: '0 16px 45px rgba(127, 90, 240, 0.35)',
-                                        '&:hover': {
-                                            boxShadow: '0 22px 60px rgba(127, 90, 240, 0.45)',
-                                            transform: 'translateY(-2px)'
-                                        }
-                                    }}
-                                >
-                                    Join now
-                                </Button>
+                                <Button component={Link} to="/" sx={{ color: '#e2e8f0', '&:hover': { color: '#7f5af0' } }}>Home</Button>
+                                <Button component={Link} to="/login" sx={{ color: '#e2e8f0', '&:hover': { color: '#7f5af0' } }}>Sign In</Button>
+                                <Button component={Link} to="/register" variant="contained" sx={{ background: 'linear-gradient(135deg, #7f5af0 0%, #5b27d1 100%)', boxShadow: '0 4px 20px rgba(127, 90, 240, 0.3)', '&:hover': { boxShadow: '0 6px 25px rgba(127, 90, 240, 0.5)' } }}>Join Now</Button>
                             </>
                         )}
                     </Box>

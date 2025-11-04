@@ -1,251 +1,83 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-    Container,
-    Typography,
-    Box,
-    Grid,
-    Avatar,
-    Button,
-    Alert,
-    Stack,
-    Divider
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import PersonIcon from '@mui/icons-material/Person';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
+﻿import React, { useState, useEffect } from 'react';
+import { Container, Box, Typography, Card, CardContent, List, ListItem, ListItemText, Chip, Button, Alert, CircularProgress, Avatar, IconButton } from '@mui/material';
+import { Group, ExitToApp, Delete } from '@mui/icons-material';
 import api from '../../services/api';
-import {
-    PageWrapper,
-    PageHeader,
-    PageTitle,
-    PageSubtitle,
-    SectionCard,
-    SectionTitle,
-    HelperText,
-    AccentBadge,
-    InfoChip
-} from '../styled/StyledComponents';
-
-const MemberCard = styled(Box)(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    gap: theme.spacing(2),
-    padding: theme.spacing(2),
-    borderRadius: 18,
-    border: '1px solid rgba(15, 23, 42, 0.08)',
-    backgroundColor: 'rgba(15, 23, 42, 0.02)'
-}));
 
 const MyTeam = () => {
-    const navigate = useNavigate();
     const [team, setTeam] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
-    useEffect(() => {
-        fetchMyTeam();
-    }, []);
+    useEffect(() => { fetchTeam(); }, []);
 
-    const fetchMyTeam = async () => {
+    const fetchTeam = async () => {
         try {
-            const response = await api.get('/teams/myteam');
-            setTeam(response.data);
-        } catch (error) {
-            setError('Failed to load team data.');
+            const res = await api.get('/api/teams/my-team');
+            setTeam(res.data);
+        } catch (err) {
+            setError(err.response?.data?.message || 'Not in a team yet');
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleStatusChange = async (memberId, newStatus) => {
+    const handleLeave = async () => {
+        if (!window.confirm('Are you sure you want to leave this team?')) return;
         try {
-            await api.patch(`/teams/member-status/${team._id}/${memberId}`, {
-                status: newStatus
-            });
-            setSuccess('Member status updated successfully.');
-            fetchMyTeam();
-            setTimeout(() => setSuccess(''), 3000);
-        } catch (error) {
-            setError('Could not update the member status.');
-            setTimeout(() => setError(''), 3000);
+            await api.delete(/api/teams//leave);
+            setSuccess('Left team successfully');
+            setTimeout(() => window.location.reload(), 1500);
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to leave team');
         }
     };
 
-    if (!team) {
-        return (
-            <PageWrapper>
-                <Container maxWidth="md">
-                    <SectionCard sx={{ textAlign: 'center' }}>
-                        <SectionTitle variant="h6">No team found</SectionTitle>
-                        <HelperText>
-                            Create a team or join one from the Explore page to see your details here.
-                        </HelperText>
-                    </SectionCard>
-                </Container>
-            </PageWrapper>
-        );
-    }
+    const handleRemove = async (userId) => {
+        if (!window.confirm('Remove this member?')) return;
+        try {
+            await api.delete(/api/teams//members/);
+            setSuccess('Member removed');
+            fetchTeam();
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to remove member');
+        }
+    };
 
-    const acceptedMembers = (team.members || []).filter((member) => member.status === 'accepted');
-    const pendingMembers = (team.members || []).filter((member) => member.status === 'pending');
+    if (loading) return <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(180deg, #050714 0%, #0a0f1e 100%)' }}><CircularProgress sx={{ color: '#7f5af0' }} /></Box>;
 
     return (
-        <PageWrapper>
-            <Container maxWidth="lg">
-                <PageHeader>
-                    <AccentBadge>Team Console</AccentBadge>
-                    <PageTitle>My Team: {team.projectName}</PageTitle>
-                    <PageSubtitle>
-                        Review your project details, stay close to your teammates, and manage pending requests without leaving this neon cockpit.
-                    </PageSubtitle>
-                </PageHeader>
-
-                <Stack spacing={3}>
-                    {error && <Alert severity="error">{error}</Alert>}
-                    {success && <Alert severity="success">{success}</Alert>}
-
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} md={4}>
-                            <Stack spacing={3}>
-                                <SectionCard>
-                                    <SectionTitle variant="h6">Project Details</SectionTitle>
-                                    <HelperText sx={{ mb: 2 }}>
-                                        {team.description || 'No project description has been added yet.'}
-                                    </HelperText>
-                                    <InfoChip label={`Members: ${acceptedMembers.length} / ${team.maxMembers}`} sx={{ mb: 2 }} />
-                                    <Button
-                                        startIcon={<WhatsAppIcon />}
-                                        variant="outlined"
-                                        color="primary"
-                                        href={`https://wa.me/${team.whatsapp}`}
-                                        target="_blank"
-                                        rel="noopener"
-                                    >
-                                        Open WhatsApp Chat
-                                    </Button>
-                                </SectionCard>
-
-                                <SectionCard>
-                                    <SectionTitle variant="h6">Required Roles</SectionTitle>
-                                    <Stack spacing={1.5}>
-                                        {team.roles.map((role, index) => {
-                                            const filled = acceptedMembers.some((member) => member.role === role.title);
-                                            return (
-                                                <MemberCard key={index} sx={{ backgroundColor: 'transparent' }}>
-                                                    <Box>
-                                                        <Typography sx={{ fontWeight: 600, color: '#0f172a' }}>
-                                                            {role.title}
-                                                        </Typography>
-                                                        <HelperText>{role.description}</HelperText>
-                                                    </Box>
-                                                    <InfoChip
-                                                        label={filled ? 'Role filled' : 'Still available'}
-                                                        sx={{ backgroundColor: filled ? 'rgba(5, 118, 66, 0.12)' : 'rgba(15, 23, 42, 0.06)', color: filled ? '#057642' : '#0f172a' }}
-                                                    />
-                                                </MemberCard>
-                                            );
-                                        })}
-                                    </Stack>
-                                </SectionCard>
-                            </Stack>
-                        </Grid>
-
-                        <Grid item xs={12} md={8}>
-                            <SectionCard>
-                                <SectionTitle variant="h6">Team Members</SectionTitle>
-                                {acceptedMembers.length === 0 ? (
-                                    <HelperText>No members have been accepted yet.</HelperText>
-                                ) : (
-                                    <Stack spacing={2}>
-                                        {acceptedMembers.map((member) => (
-                                            <MemberCard key={member.user._id}>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                    <Avatar
-                                                        src={member.user.image}
-                                                        onClick={() => navigate(`/profile/${member.user._id}`)}
-                                                        sx={{ cursor: 'pointer' }}
-                                                    >
-                                                        <PersonIcon />
-                                                    </Avatar>
-                                                    <Box sx={{ textAlign: 'left' }}>
-                                                        <Typography sx={{ fontWeight: 600, color: '#0f172a' }}>
-                                                            {member.user.name}
-                                                        </Typography>
-                                                        <HelperText>{member.user.email}</HelperText>
-                                                        {member.user.whatsapp && (
-                                                            <Button
-                                                                startIcon={<WhatsAppIcon />}
-                                                                variant="text"
-                                                                color="primary"
-                                                                href={`https://wa.me/${member.user.whatsapp}`}
-                                                                target="_blank"
-                                                                rel="noopener"
-                                                                onClick={(e) => e.stopPropagation()}
-                                                                sx={{ mt: 1 }}
-                                                            >
-                                                                {member.user.whatsapp}
-                                                            </Button>
-                                                        )}
-                                                    </Box>
-                                                </Box>
-                                                <InfoChip label={member.role} />
-                                            </MemberCard>
-                                        ))}
-                                    </Stack>
-                                )}
-                            </SectionCard>
-
-                            {pendingMembers.length > 0 && (
-                                <SectionCard sx={{ mt: 3 }}>
-                                    <SectionTitle variant="h6">Join Requests</SectionTitle>
-                                    <Stack spacing={2}
-                                        divider={<Divider flexItem sx={{ borderColor: 'rgba(15, 23, 42, 0.06)' }} />}
-                                    >
-                                        {pendingMembers.map((member) => (
-                                            <MemberCard key={member.user._id} sx={{ border: 'none', backgroundColor: 'transparent', padding: 0 }}>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                    <Avatar src={member.user.image}>
-                                                        <PersonIcon />
-                                                    </Avatar>
-                                                    <Box sx={{ textAlign: 'left' }}>
-                                                        <Typography sx={{ fontWeight: 600, color: '#0f172a' }}>
-                                                            {member.user.name}
-                                                        </Typography>
-                                                        <HelperText>{member.user.email}</HelperText>
-                                                        <InfoChip label={`Requested role: ${member.role}`} sx={{ mt: 1 }} />
-                                                    </Box>
-                                                </Box>
-                                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
-                                                    <Button
-                                                        variant="contained"
-                                                        color="primary"
-                                                        startIcon={<CheckCircleIcon />}
-                                                        onClick={() => handleStatusChange(member.user._id, 'accepted')}
-                                                    >
-                                                        Approve
-                                                    </Button>
-                                                    <Button
-                                                        variant="outlined"
-                                                        color="error"
-                                                        startIcon={<CancelIcon />}
-                                                        onClick={() => handleStatusChange(member.user._id, 'rejected')}
-                                                    >
-                                                        Decline
-                                                    </Button>
-                                                </Stack>
-                                            </MemberCard>
-                                        ))}
-                                    </Stack>
-                                </SectionCard>
-                            )}
-                        </Grid>
-                    </Grid>
-                </Stack>
+        <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #050714 0%, #0a0f1e 100%)', pt: 12, pb: 8 }}>
+            <Container maxWidth="md">
+                <Typography variant="h3" sx={{ fontWeight: 700, background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', mb: 4, textAlign: 'center' }}>My Team</Typography>
+                {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+                {success && <Alert severity="success" sx={{ mb: 3 }}>{success}</Alert>}
+                {!team ? (
+                    <Typography variant="h6" sx={{ color: 'rgba(226, 232, 240, 0.5)', textAlign: 'center' }}>You're not in a team yet</Typography>
+                ) : (
+                    <Card sx={{ background: 'rgba(12, 17, 31, 0.8)', border: '1px solid rgba(127, 90, 240, 0.3)', borderRadius: 4 }}>
+                        <CardContent sx={{ p: 4 }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                                <Typography variant="h4" sx={{ fontWeight: 700, color: '#e2e8f0' }}>{team.name}</Typography>
+                                <Chip icon={<Group />} label={${team.currentMembers}/} sx={{ background: 'rgba(44, 198, 125, 0.2)', color: '#2cb67d', fontWeight: 600 }} />
+                            </Box>
+                            <Chip label={team.subject} sx={{ mb: 2, background: 'rgba(127, 90, 240, 0.2)', color: '#7f5af0', fontWeight: 600 }} />
+                            <Typography variant="body1" sx={{ color: 'rgba(226, 232, 240, 0.7)', mb: 3 }}>{team.description || 'No description'}</Typography>
+                            <Typography variant="h6" sx={{ fontWeight: 600, color: '#e2e8f0', mb: 2 }}>Members</Typography>
+                            <List sx={{ mb: 3 }}>
+                                {team.members.map(member => (
+                                    <ListItem key={member._id} sx={{ background: 'rgba(127, 90, 240, 0.1)', borderRadius: 2, mb: 1, border: '1px solid rgba(127, 90, 240, 0.2)' }} secondaryAction={team.creator._id === member._id ? <Chip label="Creator" size="small" sx={{ background: 'rgba(231, 92, 255, 0.2)', color: '#e75cff', fontWeight: 600 }} /> : team.creator._id === JSON.parse(localStorage.getItem('user'))?._id && <IconButton edge="end" onClick={() => handleRemove(member._id)}><Delete sx={{ color: '#ef4444' }} /></IconButton>}>
+                                        <Avatar sx={{ mr: 2, background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)' }}>{member.name[0]}</Avatar>
+                                        <ListItemText primary={member.name} secondary={member.email} primaryTypographyProps={{ sx: { color: '#e2e8f0', fontWeight: 600 } }} secondaryTypographyProps={{ sx: { color: 'rgba(226, 232, 240, 0.6)' } }} />
+                                    </ListItem>
+                                ))}
+                            </List>
+                            <Button fullWidth variant="outlined" color="error" startIcon={<ExitToApp />} onClick={handleLeave} sx={{ borderColor: '#ef4444', color: '#ef4444', '&:hover': { borderColor: '#dc2626', background: 'rgba(239, 68, 68, 0.1)' } }}>Leave Team</Button>
+                        </CardContent>
+                    </Card>
+                )}
             </Container>
-        </PageWrapper>
+        </Box>
     );
 };
 

@@ -1,304 +1,113 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import {
-    Container,
-    Box,
-    Typography,
-    TextField,
-    Button,
-    Alert,
-    MenuItem,
-    Avatar,
-    Grid,
-    IconButton,
-    Stack,
-    Divider
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import EditIcon from '@mui/icons-material/Edit';
-import CameraAltIcon from '@mui/icons-material/CameraAlt';
+﻿import React, { useState, useEffect } from 'react';
+import { Container, Box, Typography, Grid, Card, CardContent, Avatar, Chip, TextField, Button, Alert } from '@mui/material';
+import { Edit, Save, WhatsApp, School, Person } from '@mui/icons-material';
 import api from '../../services/api';
-import {
-    PageWrapper,
-    PageHeader,
-    PageTitle,
-    PageSubtitle,
-    SectionCard,
-    SectionTitle,
-    HelperText,
-    AccentBadge
-} from '../styled/StyledComponents';
-
-const InfoRow = styled(Box)(({ theme }) => ({
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: theme.spacing(1.5),
-    borderRadius: 14,
-    border: '1px solid rgba(15, 23, 42, 0.06)',
-    backgroundColor: 'rgba(15, 23, 42, 0.02)'
-}));
 
 const Profile = () => {
-    const { user, login } = useAuth();
-    const [isEditing, setIsEditing] = useState(false);
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        specialization: '',
-        year: '',
-        whatsapp: '',
-        gender: '',
-        image: ''
-    });
+    const [user, setUser] = useState(null);
+    const [editing, setEditing] = useState(false);
+    const [formData, setFormData] = useState({});
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
-    useEffect(() => {
-        if (user) {
-            setFormData({
-                name: user.name || '',
-                email: user.email || '',
-                specialization: user.specialization || '',
-                year: user.year || '',
-                whatsapp: user.whatsapp || '',
-                gender: user.gender || '',
-                image: user.image || ''
-            });
-        }
-    }, [user]);
+    useEffect(() => { fetchProfile(); }, []);
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const handleImageChange = async (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const payload = new FormData();
-            payload.append('image', file);
-
-            try {
-                const response = await api.put('/user/profile', payload, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
-
-                setFormData((prev) => ({
-                    ...prev,
-                    image: response.data.imageUrl
-                }));
-                setSuccess('Profile photo updated successfully.');
-                setTimeout(() => setSuccess(''), 3000);
-            } catch (error) {
-                setError('Failed to upload the photo.');
-                setTimeout(() => setError(''), 5000);
-            }
-        }
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const fetchProfile = async () => {
         try {
-            const response = await api.put('/user/profile', formData);
-            login(response.data, localStorage.getItem('token'));
-            setSuccess('Profile updated successfully.');
-            setError('');
-            setIsEditing(false);
+            const res = await api.get('/api/users/profile');
+            setUser(res.data);
+            setFormData(res.data);
+        } catch (err) {
+            setError('Failed to load profile');
+        }
+    };
+
+    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    const handleSave = async () => {
+        try {
+            await api.put('/api/users/profile', formData);
+            setSuccess('Profile updated!');
+            setEditing(false);
+            fetchProfile();
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
-            setError(err.response?.data?.message || 'Something went wrong while updating your profile.');
-            setSuccess('');
-            setTimeout(() => setError(''), 5000);
+            setError(err.response?.data?.message || 'Failed to update profile');
         }
     };
 
+    if (!user) return null;
+
     return (
-        <PageWrapper>
-            <Container maxWidth="lg">
-                <PageHeader>
-                    <AccentBadge>My Profile</AccentBadge>
-                    <PageTitle>Account Management</PageTitle>
-                    <PageSubtitle>
-                        Keep your details fresh, review your account at a glance, and stay ready to join the brightest teams.
-                    </PageSubtitle>
-                </PageHeader>
-
-                <Stack spacing={3}>
-                    {error && <Alert severity="error">{error}</Alert>}
-                    {success && <Alert severity="success">{success}</Alert>}
-
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} md={4}>
-                            <SectionCard>
-                                <Box sx={{ position: 'relative', textAlign: 'center' }}>
-                                    <Avatar
-                                        src={formData.image || '/default-avatar.png'}
-                                        alt={formData.name}
-                                        sx={{
-                                            width: 140,
-                                            height: 140,
-                                            margin: '0 auto',
-                                            mb: 2,
-                                            border: '4px solid rgba(10, 102, 194, 0.15)'
-                                        }}
-                                    >
-                                        {!formData.image && formData.name.charAt(0)}
-                                    </Avatar>
-                                    {isEditing && (
-                                        <>
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                id="image-upload"
-                                                style={{ display: 'none' }}
-                                                onChange={handleImageChange}
-                                            />
-                                            <label htmlFor="image-upload">
-                                                <IconButton
-                                                    component="span"
-                                                    sx={{
-                                                        position: 'absolute',
-                                                        top: 8,
-                                                        right: 8,
-                                                        backgroundColor: 'rgba(15, 23, 42, 0.06)'
-                                                    }}
-                                                >
-                                                    <CameraAltIcon fontSize="small" />
-                                                </IconButton>
-                                            </label>
-                                        </>
-                                    )}
-                                </Box>
-
-                                <Stack spacing={1.5} sx={{ textAlign: 'center', mb: 3 }}>
-                                    <Typography variant="h6">{formData.name}</Typography>
-                                    <HelperText>{formData.email}</HelperText>
-                                </Stack>
-
-                                {!isEditing && (
-                                    <Button
-                                        startIcon={<EditIcon />}
-                                        variant="contained"
-                                        fullWidth
-                                        onClick={() => setIsEditing(true)}
-                                    >
-                                        Edit Profile
-                                    </Button>
-                                )}
-                            </SectionCard>
-                        </Grid>
-
-                        <Grid item xs={12} md={8}>
-                            {isEditing ? (
-                                <SectionCard component="form" onSubmit={handleSubmit}>
-                                    <SectionTitle variant="h6">Edit Details</SectionTitle>
-                                    <Grid container spacing={2.5}>
-                                        <Grid item xs={12}>
-                                            <TextField
-                                                required
-                                                fullWidth
-                                                name="name"
-                                                label="Name"
-                                                value={formData.name}
-                                                onChange={handleChange}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <TextField
-                                                fullWidth
-                                                name="email"
-                                                label="Email"
-                                                value={formData.email}
-                                                disabled
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                fullWidth
-                                                name="specialization"
-                                                label="Specialization"
-                                                value={formData.specialization}
-                                                onChange={handleChange}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                fullWidth
-                                                name="year"
-                                                label="Academic Year"
-                                                type="number"
-                                                value={formData.year}
-                                                onChange={handleChange}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                fullWidth
-                                                name="whatsapp"
-                                                label="WhatsApp Number"
-                                                value={formData.whatsapp}
-                                                onChange={handleChange}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <TextField
-                                                fullWidth
-                                                select
-                                                name="gender"
-                                                label="Gender"
-                                                value={formData.gender}
-                                                onChange={handleChange}
-                                            >
-                                                <MenuItem value="male">Male</MenuItem>
-                                                <MenuItem value="female">Female</MenuItem>
-                                            </TextField>
-                                        </Grid>
+        <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #050714 0%, #0a0f1e 100%)', pt: 12, pb: 8 }}>
+            <Container maxWidth="md">
+                <Typography variant="h3" sx={{ fontWeight: 700, background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', mb: 4, textAlign: 'center' }}>My Profile</Typography>
+                {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+                {success && <Alert severity="success" sx={{ mb: 3 }}>{success}</Alert>}
+                <Card sx={{ background: 'rgba(12, 17, 31, 0.8)', border: '1px solid rgba(127, 90, 240, 0.3)', borderRadius: 4 }}>
+                    <CardContent sx={{ p: 4 }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
+                            <Avatar sx={{ width: 120, height: 120, background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', fontSize: '3rem', mb: 2 }}>{user.name?.[0]}</Avatar>
+                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#e2e8f0', mb: 1 }}>{user.name}</Typography>
+                            <Typography variant="body1" sx={{ color: 'rgba(226, 232, 240, 0.6)' }}>{user.email}</Typography>
+                        </Box>
+                        {!editing ? (
+                            <>
+                                <Grid container spacing={3} sx={{ mb: 3 }}>
+                                    <Grid item xs={12} sm={6}>
+                                        <Box sx={{ p: 2, background: 'rgba(127, 90, 240, 0.1)', borderRadius: 2, border: '1px solid rgba(127, 90, 240, 0.2)' }}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(226, 232, 240, 0.5)', display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}><WhatsApp fontSize="small" /> WhatsApp</Typography>
+                                            <Typography variant="body1" sx={{ color: '#e2e8f0', fontWeight: 600 }}>{user.whatsapp || 'Not set'}</Typography>
+                                        </Box>
                                     </Grid>
-
-                                    <Divider sx={{ my: 3, borderColor: 'rgba(15, 23, 42, 0.05)' }} />
-
-                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                                        <Button type="submit" variant="contained">
-                                            Save changes
-                                        </Button>
-                                        <Button variant="outlined" onClick={() => setIsEditing(false)}>
-                                            Cancel
-                                        </Button>
-                                    </Box>
-                                </SectionCard>
-                            ) : (
-                                <SectionCard>
-                                    <SectionTitle variant="h6">My Core Info</SectionTitle>
-                                    <Stack spacing={2}>
-                                        <InfoRow>
-                                            <HelperText>Specialization</HelperText>
-                                            <Typography>{formData.specialization || 'Not set'}</Typography>
-                                        </InfoRow>
-                                        <InfoRow>
-                                            <HelperText>Academic Year</HelperText>
-                                            <Typography>{formData.year || 'Not set'}</Typography>
-                                        </InfoRow>
-                                        <InfoRow>
-                                            <HelperText>WhatsApp Number</HelperText>
-                                            <Typography>{formData.whatsapp || 'Not provided'}</Typography>
-                                        </InfoRow>
-                                        <InfoRow>
-                                            <HelperText>Gender</HelperText>
-                                            <Typography>{formData.gender === 'male' ? 'Male' : formData.gender === 'female' ? 'Female' : 'Not set'}</Typography>
-                                        </InfoRow>
-                                    </Stack>
-                                </SectionCard>
-                            )}
-                        </Grid>
-                    </Grid>
-                </Stack>
+                                    <Grid item xs={12} sm={6}>
+                                        <Box sx={{ p: 2, background: 'rgba(127, 90, 240, 0.1)', borderRadius: 2, border: '1px solid rgba(127, 90, 240, 0.2)' }}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(226, 232, 240, 0.5)', display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}><School fontSize="small" /> Department</Typography>
+                                            <Typography variant="body1" sx={{ color: '#e2e8f0', fontWeight: 600 }}>{user.department || 'Not set'}</Typography>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <Box sx={{ p: 2, background: 'rgba(127, 90, 240, 0.1)', borderRadius: 2, border: '1px solid rgba(127, 90, 240, 0.2)' }}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(226, 232, 240, 0.5)', mb: 0.5 }}>Year</Typography>
+                                            <Typography variant="body1" sx={{ color: '#e2e8f0', fontWeight: 600 }}>{user.year || 'Not set'}</Typography>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <Box sx={{ p: 2, background: 'rgba(127, 90, 240, 0.1)', borderRadius: 2, border: '1px solid rgba(127, 90, 240, 0.2)' }}>
+                                            <Typography variant="caption" sx={{ color: 'rgba(226, 232, 240, 0.5)', mb: 0.5 }}>Gender</Typography>
+                                            <Typography variant="body1" sx={{ color: '#e2e8f0', fontWeight: 600 }}>{user.gender || 'Not set'}</Typography>
+                                        </Box>
+                                    </Grid>
+                                    {user.specialization && (
+                                        <Grid item xs={12}>
+                                            <Box sx={{ p: 2, background: 'rgba(127, 90, 240, 0.1)', borderRadius: 2, border: '1px solid rgba(127, 90, 240, 0.2)' }}>
+                                                <Typography variant="caption" sx={{ color: 'rgba(226, 232, 240, 0.5)', mb: 0.5 }}>Specialization</Typography>
+                                                <Typography variant="body1" sx={{ color: '#e2e8f0', fontWeight: 600 }}>{user.specialization}</Typography>
+                                            </Box>
+                                        </Grid>
+                                    )}
+                                </Grid>
+                                <Button fullWidth variant="contained" startIcon={<Edit />} onClick={() => setEditing(true)} sx={{ background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', color: '#fff', fontWeight: 600, '&:hover': { background: 'linear-gradient(135deg, #6b47d6 0%, #25a569 100%)' } }}>Edit Profile</Button>
+                            </>
+                        ) : (
+                            <>
+                                <Grid container spacing={2} sx={{ mb: 3 }}>
+                                    <Grid item xs={12}><TextField fullWidth label="Name" name="name" value={formData.name || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { color: '#e2e8f0', '& fieldset': { borderColor: 'rgba(127, 90, 240, 0.3)' }, '&:hover fieldset': { borderColor: '#7f5af0' }, '&.Mui-focused fieldset': { borderColor: '#7f5af0' } }, '& .MuiInputLabel-root': { color: 'rgba(226, 232, 240, 0.7)' } }} /></Grid>
+                                    <Grid item xs={12}><TextField fullWidth label="WhatsApp" name="whatsapp" value={formData.whatsapp || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { color: '#e2e8f0', '& fieldset': { borderColor: 'rgba(127, 90, 240, 0.3)' }, '&:hover fieldset': { borderColor: '#7f5af0' }, '&.Mui-focused fieldset': { borderColor: '#7f5af0' } }, '& .MuiInputLabel-root': { color: 'rgba(226, 232, 240, 0.7)' } }} /></Grid>
+                                    <Grid item xs={12} sm={6}><TextField fullWidth label="Department" name="department" value={formData.department || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { color: '#e2e8f0', '& fieldset': { borderColor: 'rgba(127, 90, 240, 0.3)' }, '&:hover fieldset': { borderColor: '#7f5af0' }, '&.Mui-focused fieldset': { borderColor: '#7f5af0' } }, '& .MuiInputLabel-root': { color: 'rgba(226, 232, 240, 0.7)' } }} /></Grid>
+                                    <Grid item xs={12} sm={6}><TextField fullWidth label="Year" name="year" value={formData.year || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { color: '#e2e8f0', '& fieldset': { borderColor: 'rgba(127, 90, 240, 0.3)' }, '&:hover fieldset': { borderColor: '#7f5af0' }, '&.Mui-focused fieldset': { borderColor: '#7f5af0' } }, '& .MuiInputLabel-root': { color: 'rgba(226, 232, 240, 0.7)' } }} /></Grid>
+                                    <Grid item xs={12}><TextField fullWidth label="Specialization" name="specialization" value={formData.specialization || ''} onChange={handleChange} sx={{ '& .MuiOutlinedInput-root': { color: '#e2e8f0', '& fieldset': { borderColor: 'rgba(127, 90, 240, 0.3)' }, '&:hover fieldset': { borderColor: '#7f5af0' }, '&.Mui-focused fieldset': { borderColor: '#7f5af0' } }, '& .MuiInputLabel-root': { color: 'rgba(226, 232, 240, 0.7)' } }} /></Grid>
+                                </Grid>
+                                <Box sx={{ display: 'flex', gap: 2 }}>
+                                    <Button fullWidth variant="contained" startIcon={<Save />} onClick={handleSave} sx={{ background: 'linear-gradient(135deg, #2cb67d 0%, #16a34a 100%)', color: '#fff', fontWeight: 600, '&:hover': { background: 'linear-gradient(135deg, #25a569 0%, #15803d 100%)' } }}>Save</Button>
+                                    <Button fullWidth variant="outlined" onClick={() => { setEditing(false); setFormData(user); }} sx={{ borderColor: '#ef4444', color: '#ef4444', '&:hover': { borderColor: '#dc2626', background: 'rgba(239, 68, 68, 0.1)' } }}>Cancel</Button>
+                                </Box>
+                            </>
+                        )}
+                    </CardContent>
+                </Card>
             </Container>
-        </PageWrapper>
+        </Box>
     );
 };
 

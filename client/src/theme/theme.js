@@ -150,6 +150,70 @@ export const theme = createTheme({
           color: '#cbd5f5'
         }
       }
+    },
+    MuiContainer: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'transparent !important'
+        }
+      }
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          backdropFilter: 'blur(10px)'
+        },
+        standardError: {
+          background: 'rgba(239, 68, 68, 0.1)',
+          border: '1px solid rgba(239, 68, 68, 0.3)',
+          color: '#fca5a5'
+        },
+        standardSuccess: {
+          background: 'rgba(44, 182, 125, 0.1)',
+          border: '1px solid rgba(44, 182, 125, 0.3)',
+          color: '#86efac'
+        },
+        standardInfo: {
+          background: 'rgba(14, 165, 233, 0.1)',
+          border: '1px solid rgba(14, 165, 233, 0.3)',
+          color: '#7dd3fc'
+        },
+        standardWarning: {
+          background: 'rgba(251, 146, 60, 0.1)',
+          border: '1px solid rgba(251, 146, 60, 0.3)',
+          color: '#fdba74'
+        }
+      }
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          background: 'rgba(12, 17, 31, 0.95)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(127, 90, 240, 0.2)'
+        }
+      }
+    },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          background: 'rgba(12, 17, 31, 0.95)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(127, 90, 240, 0.2)'
+        }
+      }
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          background: 'rgba(12, 17, 31, 0.95)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(127, 90, 240, 0.3)',
+          color: '#e2e8f0',
+          fontSize: '0.875rem'
+        }
+      }
     }
   }
 });

@@ -1,436 +1,60 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { 
-    TextField, 
-    Button, 
-    Container, 
-    Typography, 
-    Box, 
-    Alert, 
-    MenuItem,
-    InputAdornment,
-    IconButton,
-    Grid,
-    Paper,
-    Link,
-    Divider
-} from '@mui/material';
-import {
-    Person,
-    Email,
-    Lock,
-    School,
-    Phone,
-    Wc,
-    Visibility,
-    VisibilityOff,
-    HowToReg
-} from '@mui/icons-material';
+import { TextField, Button, Container, Typography, Box, Alert, Link, MenuItem, InputAdornment, IconButton, Grid } from '@mui/material';
+import { Person, Email, Lock, School, Phone, Wc, Visibility, VisibilityOff, ArrowForward } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../services/api';
 
 const Register = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        department: '',
-        specialization: '',
-        year: '',
-        whatsapp: '',
-        gender: ''
-    });
+    const [formData, setFormData] = useState({ name: '', email: '', password: '', department: '', specialization: '', year: '', whatsapp: '', gender: '' });
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
+    const handleChange = (e) => { setFormData({ ...formData, [e.target.name]: e.target.value }); };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-        setSuccess('');
         setLoading(true);
-        
         try {
             const response = await api.post('/auth/signup', formData);
             login(response.data.user, response.data.token);
-            setSuccess('Account created successfully! Redirecting...');
-            setTimeout(() => {
-                navigate('/teams');
-            }, 1000);
+            navigate('/teams');
         } catch (err) {
-            setError(err.response?.data?.message || 'Something went wrong while signing up.');
-            setTimeout(() => setError(''), 5000);
+            setError(err.response?.data?.message || 'Registration failed');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <Box
-            sx={{
-                minHeight: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                py: 4
-            }}
-        >
-            <Container component="main" maxWidth="sm">
-                <Paper
-                    elevation={10}
-                    sx={{
-                        p: 4,
-                        borderRadius: '25px',
-                        background: 'rgba(255, 255, 255, 0.95)',
-                        backdropFilter: 'blur(10px)',
-                        boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
-                    }}
-                >
-                    {/* Logo */}
-                    <Box sx={{ textAlign: 'center', mb: 3 }}>
-                        <Box
-                            sx={{
-                                width: 80,
-                                height: 80,
-                                borderRadius: '20px',
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '40px',
-                                margin: '0 auto',
-                                mb: 2,
-                                boxShadow: '0 10px 30px rgba(102, 126, 234, 0.4)'
-                            }}
-                        >
-                            🎓
-                        </Box>
-                        <Typography 
-                            component="h1" 
-                            variant="h4" 
-                            fontWeight={700}
-                            sx={{
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                mb: 1
-                            }}
-                        >
-                            Create a New Account
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            Join now and kick off your journey inside our glowing team universe.
-                        </Typography>
-                    </Box>
-
-                    {error && (
-                        <Alert severity="error" sx={{ mb: 2, borderRadius: '12px' }}>
-                            {error}
-                        </Alert>
-                    )}
-
-                    {success && (
-                        <Alert severity="success" sx={{ mb: 2, borderRadius: '12px' }}>
-                            {success}
-                        </Alert>
-                    )}
-
+        <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(180deg, #050714 0%, #0a0f1e 100%)', py: 6 }}>
+            <Container maxWidth="md">
+                <Box sx={{ p: { xs: 4, sm: 6 }, borderRadius: 4, background: 'rgba(12, 17, 31, 0.8)', border: '1px solid rgba(127, 90, 240, 0.3)', backdropFilter: 'blur(10px)', boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)' }}>
+                    <Typography variant="h3" sx={{ fontWeight: 700, background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', mb: 1, textAlign: 'center' }}>Create Account</Typography>
+                    <Typography variant="body1" sx={{ color: 'rgba(226, 232, 240, 0.7)', mb: 4, textAlign: 'center' }}>Join the community</Typography>
+                    {error && <Alert severity="error" sx={{ mb: 3, borderRadius: 2, background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#fca5a5' }}>{error}</Alert>}
                     <Box component="form" onSubmit={handleSubmit}>
-                        <Grid container spacing={2}>
-                            {/* Name */}
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    id="name"
-                                    label="Full name"
-                                    name="name"
-                                    autoFocus
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Person color="primary" />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '12px'
-                                        }
-                                    }}
-                                />
-                            </Grid>
-
-                            {/* Email */}
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    id="email"
-                                    label="University email"
-                                    name="email"
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Email color="primary" />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '12px'
-                                        }
-                                    }}
-                                />
-                            </Grid>
-
-                            {/* Password */}
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="password"
-                                    label="Password"
-                                    type={showPassword ? 'text' : 'password'}
-                                    id="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Lock color="primary" />
-                                            </InputAdornment>
-                                        ),
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    onClick={() => setShowPassword(!showPassword)}
-                                                    edge="end"
-                                                >
-                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '12px'
-                                        }
-                                    }}
-                                />
-                            </Grid>
-
-                            {/* Department */}
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="department"
-                                    label="Academic department"
-                                    id="department"
-                                    value={formData.department}
-                                    onChange={handleChange}
-                                    placeholder="Example: Computer Science"
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '12px'
-                                        }
-                                    }}
-                                />
-                            </Grid>
-
-                            {/* Specialization */}
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="specialization"
-                                    label="Specialization"
-                                    id="specialization"
-                                    value={formData.specialization}
-                                    onChange={handleChange}
-                                    placeholder="Example: Software Engineering"
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '12px'
-                                        }
-                                    }}
-                                />
-                            </Grid>
-
-                            {/* Year */}
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    select
-                                    name="year"
-                                    label="Academic year"
-                                    value={formData.year}
-                                    onChange={handleChange}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <School color="primary" />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '12px'
-                                        }
-                                    }}
-                                >
-                                    <MenuItem value={1}>Year 1</MenuItem>
-                                    <MenuItem value={2}>Year 2</MenuItem>
-                                    <MenuItem value={3}>Year 3</MenuItem>
-                                    <MenuItem value={4}>Year 4</MenuItem>
-                                </TextField>
-                            </Grid>
-
-                            {/* WhatsApp */}
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    name="whatsapp"
-                                    label="WhatsApp number"
-                                    id="whatsapp"
-                                    value={formData.whatsapp}
-                                    onChange={handleChange}
-                                    placeholder="+20 123 456 7890"
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Phone color="primary" />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '12px'
-                                        }
-                                    }}
-                                />
-                            </Grid>
-
-                            {/* Gender */}
-                            <Grid item xs={12}>
-                                <TextField
-                                    required
-                                    fullWidth
-                                    select
-                                    name="gender"
-                                    label="Gender"
-                                    value={formData.gender}
-                                    onChange={handleChange}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <Wc color="primary" />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '12px'
-                                        }
-                                    }}
-                                >
-                                    <MenuItem value="male">Male</MenuItem>
-                                    <MenuItem value="female">Female</MenuItem>
-                                </TextField>
-                            </Grid>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12} sm={6}><TextField fullWidth label="Name" name="name" required value={formData.name} onChange={handleChange} InputProps={{ startAdornment: <InputAdornment position="start"><Person sx={{ color: 'rgba(127, 90, 240, 0.7)' }} /></InputAdornment> }} /></Grid>
+                            <Grid item xs={12} sm={6}><TextField fullWidth label="Email" name="email" type="email" required value={formData.email} onChange={handleChange} InputProps={{ startAdornment: <InputAdornment position="start"><Email sx={{ color: 'rgba(127, 90, 240, 0.7)' }} /></InputAdornment> }} /></Grid>
+                            <Grid item xs={12} sm={6}><TextField fullWidth label="Password" name="password" type={showPassword ? 'text' : 'password'} required value={formData.password} onChange={handleChange} InputProps={{ startAdornment: <InputAdornment position="start"><Lock sx={{ color: 'rgba(127, 90, 240, 0.7)' }} /></InputAdornment>, endAdornment: <InputAdornment position="end"><IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(226, 232, 240, 0.5)' }}>{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton></InputAdornment> }} /></Grid>
+                            <Grid item xs={12} sm={6}><TextField fullWidth label="WhatsApp" name="whatsapp" required value={formData.whatsapp} onChange={handleChange} InputProps={{ startAdornment: <InputAdornment position="start"><Phone sx={{ color: 'rgba(127, 90, 240, 0.7)' }} /></InputAdornment> }} /></Grid>
+                            <Grid item xs={12} sm={6}><TextField select fullWidth label="Department" name="department" required value={formData.department} onChange={handleChange} InputProps={{ startAdornment: <InputAdornment position="start"><School sx={{ color: 'rgba(127, 90, 240, 0.7)' }} /></InputAdornment> }}>{['CS', 'IS', 'IT', 'AI', 'DS', 'Multimedia', 'Software', 'Bioinformatics'].map(d => <MenuItem key={d} value={d}>{d}</MenuItem>)}</TextField></Grid>
+                            <Grid item xs={12} sm={6}><TextField fullWidth label="Specialization" name="specialization" value={formData.specialization} onChange={handleChange} /></Grid>
+                            <Grid item xs={12} sm={6}><TextField select fullWidth label="Year" name="year" required value={formData.year} onChange={handleChange}>{['1', '2', '3', '4'].map(y => <MenuItem key={y} value={y}>Year {y}</MenuItem>)}</TextField></Grid>
+                            <Grid item xs={12} sm={6}><TextField select fullWidth label="Gender" name="gender" required value={formData.gender} onChange={handleChange} InputProps={{ startAdornment: <InputAdornment position="start"><Wc sx={{ color: 'rgba(127, 90, 240, 0.7)' }} /></InputAdornment> }}><MenuItem value="male">Male</MenuItem><MenuItem value="female">Female</MenuItem></TextField></Grid>
                         </Grid>
-
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            disabled={loading}
-                            startIcon={<HowToReg />}
-                            sx={{
-                                mt: 3,
-                                mb: 2,
-                                py: 1.5,
-                                borderRadius: '12px',
-                                fontSize: '1.1rem',
-                                fontWeight: 600,
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                boxShadow: '0 8px 20px rgba(102, 126, 234, 0.4)',
-                                transition: 'all 0.3s ease',
-                                '&:hover': {
-                                    boxShadow: '0 12px 30px rgba(102, 126, 234, 0.5)',
-                                    transform: 'translateY(-2px)'
-                                },
-                                '&:disabled': {
-                                    background: 'rgba(0, 0, 0, 0.12)'
-                                }
-                            }}
-                        >
-                            {loading ? 'Creating your account...' : 'Create account'}
-                        </Button>
-
-                        <Divider sx={{ my: 2 }}>
-                            <Typography variant="body2" color="text.secondary">
-                                or
-                            </Typography>
-                        </Divider>
-
-                        <Box sx={{ textAlign: 'center' }}>
-                            <Typography variant="body2" color="text.secondary">
-                                Already have an account?{' '}
-                                <Link
-                                    component={RouterLink}
-                                    to="/login"
-                                    sx={{
-                                        color: 'primary.main',
-                                        textDecoration: 'none',
-                                        fontWeight: 600,
-                                        '&:hover': {
-                                            textDecoration: 'underline'
-                                        }
-                                    }}
-                                >
-                                    Sign in
-                                </Link>
-                            </Typography>
-                        </Box>
-
-                        <Box sx={{ textAlign: 'center', mt: 2 }}>
-                            <Link
-                                component={RouterLink}
-                                to="/"
-                                variant="body2"
-                                sx={{
-                                    color: 'text.secondary',
-                                    textDecoration: 'none',
-                                    '&:hover': {
-                                        color: 'primary.main'
-                                    }
-                                }}
-                            >
-                                ← Back to homepage
-                            </Link>
+                        <Button type="submit" fullWidth variant="contained" disabled={loading} endIcon={<ArrowForward />} sx={{ mt: 4, py: 1.8, fontSize: '1.1rem', fontWeight: 600, borderRadius: 3, background: 'linear-gradient(135deg, #7f5af0 0%, #5b27d1 100%)', boxShadow: '0 8px 32px rgba(127, 90, 240, 0.4)', textTransform: 'none', '&:hover': { background: 'linear-gradient(135deg, #916bff 0%, #6a37e9 100%)', boxShadow: '0 12px 40px rgba(127, 90, 240, 0.6)', transform: 'translateY(-2px)' }, transition: 'all 0.3s ease' }}>{loading ? 'Creating...' : 'Create Account'}</Button>
+                        <Box sx={{ textAlign: 'center', mt: 3 }}>
+                            <Typography variant="body2" sx={{ color: 'rgba(226, 232, 240, 0.6)' }}>Already have an account? <Link component={RouterLink} to="/login" sx={{ color: '#7f5af0', textDecoration: 'none', fontWeight: 600, '&:hover': { textDecoration: 'underline' } }}>Sign In</Link></Typography>
+                            <Link component={RouterLink} to="/" sx={{ display: 'inline-block', mt: 2, color: 'rgba(226, 232, 240, 0.5)', textDecoration: 'none', fontSize: '0.875rem', '&:hover': { color: '#7f5af0' } }}> Back to Home</Link>
                         </Box>
                     </Box>
-                </Paper>
+                </Box>
             </Container>
         </Box>
     );

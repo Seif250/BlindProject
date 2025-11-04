@@ -1,242 +1,47 @@
-import React, { useState } from 'react';
-import {
-    Container,
-    TextField,
-    Button,
-    Box,
-    IconButton,
-    Grid,
-    Alert,
-    Stack,
-    Divider
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
+﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Container, Box, Typography, TextField, Button, Alert, MenuItem } from '@mui/material';
+import { Add } from '@mui/icons-material';
 import api from '../../services/api';
-import {
-    PageWrapper,
-    PageHeader,
-    PageTitle,
-    PageSubtitle,
-    SectionCard,
-    SectionTitle,
-    HelperText,
-    AccentBadge
-} from '../styled/StyledComponents';
-
-const RoleCard = styled(Box)(({ theme }) => ({
-    borderRadius: 16,
-    border: '1px solid rgba(15, 23, 42, 0.08)',
-    backgroundColor: 'rgba(15, 23, 42, 0.025)',
-    padding: theme.spacing(2),
-}));
 
 const CreateTeam = () => {
     const navigate = useNavigate();
+    const [formData, setFormData] = useState({ name: '', subject: '', maxMembers: '', description: '' });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const [formData, setFormData] = useState({
-        projectName: '',
-        description: '',
-        maxMembers: '',
-        whatsapp: '',
-        roles: [{ title: '', description: '' }]
-    });
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const handleRoleChange = (index, field, value) => {
-        const newRoles = formData.roles.map((role, i) => (
-            i === index ? { ...role, [field]: value } : role
-        ));
-        setFormData({ ...formData, roles: newRoles });
-    };
-
-    const addRole = () => {
-        setFormData({
-            ...formData,
-            roles: [...formData.roles, { title: '', description: '' }]
-        });
-    };
-
-    const removeRole = (index) => {
-        setFormData({
-            ...formData,
-            roles: formData.roles.filter((_, i) => i !== index)
-        });
-    };
+    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
-        setSuccess('');
+        setError(''); setSuccess('');
         try {
-            await api.post('/teams/create', formData);
-            setSuccess('Team created successfully! Redirecting...');
-            setTimeout(() => {
-                navigate('/teams/my-team');
-            }, 1500);
-        } catch (error) {
-            setError(error.response?.data?.message || 'Something went wrong while creating the team.');
-            setTimeout(() => setError(''), 5000);
+            await api.post('/api/teams', formData);
+            setSuccess('Team created successfully!');
+            setTimeout(() => navigate('/teams/my-team'), 1500);
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to create team');
         }
     };
 
     return (
-        <PageWrapper>
-            <Container maxWidth="lg">
-                <PageHeader>
-                    <AccentBadge>Team Management</AccentBadge>
-                    <PageTitle>Create a New Team</PageTitle>
-                    <PageSubtitle>
-                        Describe your project, highlight the roles you need, and share your contact channel inside a calm, organized space.
-                    </PageSubtitle>
-                </PageHeader>
-
-                <Grid container spacing={3}>
-                    <Grid item xs={12} md={8}>
-                        <SectionCard component="form" onSubmit={handleSubmit}>
-                            <Stack spacing={3}>
-                                {error && <Alert severity="error">{error}</Alert>}
-                                {success && <Alert severity="success">{success}</Alert>}
-
-                                <Box>
-                                    <SectionTitle variant="h6">Project Details</SectionTitle>
-                                    <Stack spacing={2.5}>
-                                        <TextField
-                                            required
-                                            fullWidth
-                                            name="projectName"
-                                            label="Project Name"
-                                            value={formData.projectName}
-                                            onChange={handleChange}
-                                        />
-                                        <TextField
-                                            required
-                                            fullWidth
-                                            multiline
-                                            minRows={4}
-                                            name="description"
-                                            label="Project Description"
-                                            value={formData.description}
-                                            onChange={handleChange}
-                                        />
-                                        <Grid container spacing={2}>
-                                            <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    required
-                                                    fullWidth
-                                                    type="number"
-                                                    name="maxMembers"
-                                                    label="Maximum Members"
-                                                    value={formData.maxMembers}
-                                                    onChange={handleChange}
-                                                />
-                                            </Grid>
-                                            <Grid item xs={12} sm={6}>
-                                                <TextField
-                                                    required
-                                                    fullWidth
-                                                    name="whatsapp"
-                                                    label="WhatsApp Number"
-                                                    value={formData.whatsapp}
-                                                    onChange={handleChange}
-                                                />
-                                            </Grid>
-                                        </Grid>
-                                    </Stack>
-                                </Box>
-
-                                <Divider sx={{ borderColor: 'rgba(15, 23, 42, 0.08)' }} />
-
-                                <Box>
-                                    <SectionTitle variant="h6">Required Roles</SectionTitle>
-                                    <HelperText sx={{ mb: 2 }}>
-                                        Spell out the role title and a quick summary so applicants know exactly what you need.
-                                    </HelperText>
-                                    <Stack spacing={2.5}>
-                                        {formData.roles.map((role, index) => (
-                                            <RoleCard key={index}>
-                                                <Grid container spacing={2} alignItems="center">
-                                                    <Grid item xs={12} md={4}>
-                                                        <TextField
-                                                            required
-                                                            fullWidth
-                                                            label="Role Title"
-                                                            value={role.title}
-                                                            onChange={(e) => handleRoleChange(index, 'title', e.target.value)}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item xs={12} md={7}>
-                                                        <TextField
-                                                            required
-                                                            fullWidth
-                                                            label="Role Description"
-                                                            value={role.description}
-                                                            onChange={(e) => handleRoleChange(index, 'description', e.target.value)}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item xs={12} md={1} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
-                                                        <IconButton
-                                                            color="error"
-                                                            onClick={() => removeRole(index)}
-                                                            disabled={formData.roles.length === 1}
-                                                        >
-                                                            <DeleteIcon />
-                                                        </IconButton>
-                                                    </Grid>
-                                                </Grid>
-                                            </RoleCard>
-                                        ))}
-                                        <Button
-                                            startIcon={<AddIcon />}
-                                            onClick={addRole}
-                                            variant="outlined"
-                                            sx={{ alignSelf: 'flex-start' }}
-                                        >
-                                            Add Another Role
-                                        </Button>
-                                    </Stack>
-                                </Box>
-
-                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                                    <Button type="submit" variant="contained" size="large">
-                                        Create Team
-                                    </Button>
-                                    <Button variant="outlined" size="large" onClick={() => navigate('/teams')}>
-                                        Cancel
-                                    </Button>
-                                </Box>
-                            </Stack>
-                        </SectionCard>
-                    </Grid>
-
-                    <Grid item xs={12} md={4}>
-                        <SectionCard>
-                            <SectionTitle variant="h6">Quick Guidance</SectionTitle>
-                            <Stack spacing={2.5}>
-                                <HelperText>
-                                    - Blend technical skills and soft skills to keep the team balanced.
-                                </HelperText>
-                                <HelperText>
-                                    - Double-check your WhatsApp number so applicants can reach you instantly.
-                                </HelperText>
-                                <HelperText>
-                                    - You can always update project data or roles later from the My Team page.
-                                </HelperText>
-                            </Stack>
-                        </SectionCard>
-                    </Grid>
-                </Grid>
+        <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #050714 0%, #0a0f1e 100%)', pt: 12, pb: 8 }}>
+            <Container maxWidth="sm">
+                <Typography variant="h3" sx={{ fontWeight: 700, background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', mb: 1, textAlign: 'center' }}>Create New Team</Typography>
+                <Typography variant="body1" sx={{ color: 'rgba(226, 232, 240, 0.7)', mb: 4, textAlign: 'center' }}>Start building your dream team</Typography>
+                {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+                {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+                <Box component="form" onSubmit={handleSubmit} sx={{ background: 'rgba(12, 17, 31, 0.8)', border: '1px solid rgba(127, 90, 240, 0.3)', borderRadius: 4, p: 4 }}>
+                    <TextField fullWidth label="Team Name" name="name" value={formData.name} onChange={handleChange} required sx={{ mb: 2.5, '& .MuiOutlinedInput-root': { color: '#e2e8f0', '& fieldset': { borderColor: 'rgba(127, 90, 240, 0.3)' }, '&:hover fieldset': { borderColor: '#7f5af0' }, '&.Mui-focused fieldset': { borderColor: '#7f5af0' } }, '& .MuiInputLabel-root': { color: 'rgba(226, 232, 240, 0.7)' } }} />
+                    <TextField fullWidth label="Subject" name="subject" value={formData.subject} onChange={handleChange} required sx={{ mb: 2.5, '& .MuiOutlinedInput-root': { color: '#e2e8f0', '& fieldset': { borderColor: 'rgba(127, 90, 240, 0.3)' }, '&:hover fieldset': { borderColor: '#7f5af0' }, '&.Mui-focused fieldset': { borderColor: '#7f5af0' } }, '& .MuiInputLabel-root': { color: 'rgba(226, 232, 240, 0.7)' } }} />
+                    <TextField fullWidth select label="Max Members" name="maxMembers" value={formData.maxMembers} onChange={handleChange} required sx={{ mb: 2.5, '& .MuiOutlinedInput-root': { color: '#e2e8f0', '& fieldset': { borderColor: 'rgba(127, 90, 240, 0.3)' }, '&:hover fieldset': { borderColor: '#7f5af0' }, '&.Mui-focused fieldset': { borderColor: '#7f5af0' } }, '& .MuiInputLabel-root': { color: 'rgba(226, 232, 240, 0.7)' } }}>
+                        {[3, 4, 5, 6, 7, 8, 9, 10].map(n => <MenuItem key={n} value={n}>{n} Members</MenuItem>)}
+                    </TextField>
+                    <TextField fullWidth label="Description" name="description" value={formData.description} onChange={handleChange} multiline rows={4} sx={{ mb: 3, '& .MuiOutlinedInput-root': { color: '#e2e8f0', '& fieldset': { borderColor: 'rgba(127, 90, 240, 0.3)' }, '&:hover fieldset': { borderColor: '#7f5af0' }, '&.Mui-focused fieldset': { borderColor: '#7f5af0' } }, '& .MuiInputLabel-root': { color: 'rgba(226, 232, 240, 0.7)' } }} />
+                    <Button type="submit" fullWidth variant="contained" size="large" startIcon={<Add />} sx={{ background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', color: '#fff', fontWeight: 600, py: 1.5, borderRadius: 2, '&:hover': { background: 'linear-gradient(135deg, #6b47d6 0%, #25a569 100%)', boxShadow: '0 8px 24px rgba(127, 90, 240, 0.4)' } }}>Create Team</Button>
+                </Box>
             </Container>
-        </PageWrapper>
+        </Box>
     );
 };
 

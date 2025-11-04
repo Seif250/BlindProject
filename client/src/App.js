@@ -35,7 +35,7 @@ const Layout = ({ children }) => {
   return (
     <>
       {!isAuthPage && <Navbar />}
-      <Box component="main" sx={{ flexGrow: 1 }}>
+      <Box component="main" sx={{ flexGrow: 1, background: 'transparent' }}>
         {children}
       </Box>
       {!isAuthPage && <Footer />}
@@ -44,8 +44,8 @@ const Layout = ({ children }) => {
 };
 
 const LoadingState = () => (
-  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-    <CircularProgress color="primary" />
+  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh', background: 'transparent' }}>
+    <CircularProgress sx={{ color: '#7f5af0' }} />
   </Box>
 );
 
@@ -55,7 +55,7 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AuthProvider>
-          <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'transparent' }}>
             <Layout>
               <Suspense fallback={<LoadingState />}>
                 <Routes>
