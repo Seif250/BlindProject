@@ -36,8 +36,12 @@ exports.advancedTeamSearch = async (req, res) => {
         if (status) {
             filter.status = status;
         } else {
-            // افتراضياً، عرض الفرق المفتوحة فقط
-            filter.isOpen = true;
+            filter.$or = [
+                { isOpen: true },
+                { isOpen: { $exists: false } },
+                { status: { $in: ['recruiting', 'in-progress'] } },
+                { status: { $exists: false } }
+            ];
         }
 
         // التصفية حسب مستوى الصعوبة
@@ -71,7 +75,12 @@ exports.advancedTeamSearch = async (req, res) => {
 
         // التصفية للفرق التي لديها أماكن متاحة
         if (hasOpenings === 'true') {
-            filter.$expr = { $lt: ['$currentMembersCount', '$maxMembers'] };
+            filter.$expr = {
+                $lt: [
+                    { $ifNull: ['$currentMembersCount', { $size: '$members' }] },
+                    { $ifNull: ['$maxMembers', { $literal: Number.MAX_SAFE_INTEGER }] }
+                ]
+            };
         }
 
         // الترتيب

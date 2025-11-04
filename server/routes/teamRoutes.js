@@ -21,26 +21,31 @@ const getMemberUserId = (member) => {
     return null;
 };
 
+const isAcceptedStatus = (member) => {
+    const status = member && member.status ? member.status : 'accepted';
+    return status === 'accepted';
+};
+
 const recalcTeamState = (team) => {
-    const acceptedCount = team.members.filter((member) => member.status === 'accepted').length;
-    team.currentMembersCount = acceptedCount;
+    const acceptedCount = team.members.filter(isAcceptedStatus).length;
+    team.currentMembersCount = acceptedCount || team.members.length;
     team.isOpen = acceptedCount < team.maxMembers;
     return acceptedCount;
 };
 
 const formatTeam = (team, currentUserId) => {
-    const acceptedMembers = team.members.filter((member) => member.status === 'accepted');
+    const acceptedMembers = team.members.filter(isAcceptedStatus);
     const pendingMembers = team.members.filter((member) => member.status === 'pending');
     const creatorId = team.creator ? team.creator._id.toString() : null;
 
     return {
         _id: team._id,
-        name: team.projectName,
-        subject: team.category || '',
-        description: team.description,
-        maxMembers: team.maxMembers,
-        currentMembers: acceptedMembers.length,
-        isFull: acceptedMembers.length >= team.maxMembers,
+        name: team.projectName || team.name || team.title || 'Team',
+        subject: team.category || team.subject || '',
+        description: team.description || team.projectDescription || '',
+        maxMembers: team.maxMembers || team.memberLimit || acceptedMembers.length || (team.members ? team.members.length : 0),
+        currentMembers: acceptedMembers.length || team.currentMembersCount || (team.members ? team.members.length : 0),
+        isFull: (acceptedMembers.length || team.currentMembersCount || 0) >= (team.maxMembers || team.memberLimit || acceptedMembers.length),
         isCreator: creatorId === (currentUserId ? currentUserId.toString() : null),
         creator: team.creator ? {
             _id: team.creator._id,
@@ -128,7 +133,18 @@ router.get('/my-team', auth, async (req, res) => {
         const team = await populateTeamQuery(Team.findOne({
             $or: [
                 { creator: req.user.userId },
-                { members: { $elemMatch: { user: req.user.userId, status: 'accepted' } } }
+                {
+                    members: {
+                        $elemMatch: {
+                            user: req.user.userId,
+                            $or: [
+                                { status: 'accepted' },
+                                { status: { $exists: false } },
+                                { status: null }
+                            ]
+                        }
+                    }
+                }
             ]
         }));
 
@@ -191,7 +207,7 @@ router.post('/requests/:requestId/accept', auth, async (req, res) => {
             return res.status(404).json({ message: 'Request not found' });
         }
 
-        const acceptedCount = team.members.filter((item) => item.status === 'accepted').length;
+    const acceptedCount = team.members.filter(isAcceptedStatus).length;
         if (acceptedCount >= team.maxMembers) {
             return res.status(400).json({ message: 'Team is already full' });
         }
@@ -262,12 +278,12 @@ router.post('/:teamId/request', auth, async (req, res) => {
             if (existing.status === 'pending') {
                 return res.status(400).json({ message: 'You already requested to join this team' });
             }
-            if (existing.status === 'accepted') {
+            if (isAcceptedStatus(existing)) {
                 return res.status(400).json({ message: 'You are already a team member' });
             }
         }
 
-        const acceptedCount = team.members.filter((member) => member.status === 'accepted').length;
+        const acceptedCount = team.members.filter(isAcceptedStatus).length;
         if (acceptedCount >= team.maxMembers) {
             return res.status(400).json({ message: 'Team is already full' });
         }
@@ -308,7 +324,7 @@ router.delete('/:teamId/leave', auth, async (req, res) => {
         }
 
         if (isCreator) {
-            const nextOwner = team.members.find((member) => member.status === 'accepted' && getMemberUserId(member) !== userId);
+            const nextOwner = team.members.find((member) => isAcceptedStatus(member) && getMemberUserId(member) !== userId);
             if (nextOwner) {
                 team.creator = nextOwner.user && nextOwner.user._id ? nextOwner.user._id : nextOwner.user;
                 nextOwner.role = 'Owner';
