@@ -1,257 +1,146 @@
-# BlindProject (🎓 University Teams Platform)
+# BlindProject
 
-منصة تواصل لطلاب الجامعة لإنشاء فرق العمل والانضمام إليها للمشاريع الدراسية والتعاونية.
+> A privacy-first collaboration platform for university teams. BlindProject lets students discover projects, request to join, and chat after mutual approval—keeping personal details hidden until trust is earned.
 
-## ✨ المميزات
+---
 
-### نظام المستخدمين
-- � **تسجيل حساب كامل** مع:
-  - الاسم والبريد الإلكتروني
-  - صورة شخصية قابلة للتحديث
-  - التخصص والسنة الدراسية
-  - رقم الواتساب للتواصل
-  - النوع (ذكر/أنثى)
-- 🔐 **نظام أمان قوي** باستخدام JWT
-- �👤 **ملف شخصي** قابل للتعديل
-- 👥 **عرض ملفات المستخدمين الآخرين**
+## Table of Contents
+- [At a Glance](#at-a-glance)
+- [Architecture](#architecture)
+- [Quick Start](#quick-start)
+- [Environment Variables](#environment-variables)
+- [Project Structure](#project-structure)
+- [Core User Journeys](#core-user-journeys)
+- [API Surface](#api-surface)
+- [Development Notes](#development-notes)
+- [License](#license)
 
-### نظام الفرق
-- ➕ **إنشاء فريق جديد** مع:
-  - اسم المشروع ووصف تفصيلي
-  - تحديد عدد الأعضاء المطلوب
-  - تحديد الأدوار المختلفة (Frontend, Backend, Design, etc.)
-  - رابط مجموعة الواتساب
-- 🔍 **البحث الذكي عن الفرق**
-- 📬 **نظام طلبات الانضمام** (pending, accepted, rejected)
-- � **إدارة الفريق**:
-  - عرض جميع الأعضاء
-  - قبول/رفض طلبات الانضمام
-  - التواصل المباشر عبر الواتساب
-- � **تتبع الأدوار المتاحة والمشغولة**
+---
 
-### المميزات العامة
-- �💬 **تكامل مع الواتساب** للتواصل السريع
-- 📱 **تصميم متجاوب** (Responsive)
-- 🌐 **دعم كامل للغة العربية** (RTL)
-- ✅ **رسائل واضحة** للنجاح والأخطاء مع auto-dismiss
-- 🎨 **واجهة مستخدم عصرية** باستخدام Material-UI
-- 🏠 **صفحة رئيسية جذابة**
+## At a Glance
+- **Account control**: JWT-secured auth, profile editing, skills and interests, optional social links, and Multer-backed avatar uploads.
+- **Team lifecycle**: Create teams with roles, required skills, tech stack, milestones, and resources. Track join requests, manage members, and monitor capacity.
+- **Privacy-by-design**: Search pages and pending requests expose aliases and skill snapshots only. Email, WhatsApp, and avatars unlock after acceptance.
+- **Conversation requests**: One-on-one chat starts as a request. Recipients approve or reject before identities reveal; active threads provide message history and last-activity metadata.
+- **Collaboration tools**: In-team chat, meeting links, resource cards, and a polished Material UI experience tuned to the dark theme.
 
-## 🛠️ التقنيات المستخدمة
+## Architecture
+- **Frontend**: React 18, React Router v6, Material UI, Emotion, Axios.
+- **Backend**: Node.js, Express, MongoDB Atlas, Mongoose, JWT, bcryptjs, Multer.
+- **Ops & Tooling**: dotenv-configured environments, CORS rules, Vercel-ready client build, Nixpacks deployment spec.
 
-### Frontend
-- ⚛️ **React.js** - المكتبة الأساسية
-- 🎨 **Material-UI (MUI)** - مكتبة UI Components
-- 🌐 **RTL Plugin** - دعم اللغة العربية
-- 📡 **Axios** - للتواصل مع الـ API
-- 🔄 **React Router v6** - للتنقل بين الصفحات
-- 🎭 **Emotion** - لتنسيق CSS-in-JS
+## Quick Start
 
-### Backend
-- 🖥️ **Node.js & Express** - السيرفر
-- 🗄️ **MongoDB Atlas** - قاعدة البيانات السحابية
-- 🔗 **Mongoose** - ODM للتعامل مع MongoDB
-- 🔒 **JWT (jsonwebtoken)** - المصادقة
-- 🔐 **bcryptjs** - تشفير كلمات المرور
-- 📁 **Multer** - رفع الصور
-- 🌍 **CORS** - السماح بالطلبات من Frontend
+### 1. Prerequisites
+- Node.js 18+
+- npm or yarn
+- MongoDB Atlas cluster (or local MongoDB instance)
 
-## 🚀 التثبيت والتشغيل
-
-### المتطلبات
-- Node.js (v14 أو أحدث)
-- npm أو yarn
-- حساب MongoDB Atlas (مجاني) - [التسجيل هنا](https://www.mongodb.com/cloud/atlas/register)
-- اتصال بالإنترنت (للاتصال بقاعدة البيانات السحابية)
-
-### خطوات التثبيت
-
-1. **استنساخ المشروع:**
+### 2. Clone the repository
 ```bash
 git clone https://github.com/Seif250/BlindProject.git
 cd BlindProject
 ```
 
-2. **إعداد Backend:**
+### 3. Install and run the backend
 ```bash
 cd server
 npm install
 ```
-
-
-
-⚠️ **مهم:** غيّر `JWT_SECRET` لقيمة سرية وقوية!
-
-4. **إعداد MongoDB Atlas (مهم!):**
-   - اذهب إلى [MongoDB Atlas](https://cloud.mongodb.com)
-   - Network Access → Add IP Address
-   - اختر "Allow Access from Anywhere" (0.0.0.0/0) للتطوير
-   - أو أضف IP جهازك فقط
-
-5. **تشغيل Backend:**
+Create `server/.env` (see [Environment Variables](#environment-variables)). Then start the API:
 ```bash
 npm start
-# يجب أن ترى: MongoDB Connected ✓
 ```
+You should see `MongoDB Connected` in the console.
 
-6. **إعداد Frontend (في نافذة طرفية جديدة):**
+### 4. Install and run the frontend
+Open another terminal in the repo root:
 ```bash
 cd client
 npm install
-```
-
-7. **تشغيل Frontend:**
-```bash
 npm start
 ```
+The React app runs at `http://localhost:3000`.
 
-8. **افتح المتصفح على:**
-```
-http://localhost:3000
-```
+## Environment Variables
+Place the following keys in `server/.env`:
 
-## 📁 هيكل المشروع
+| Key | Description |
+| --- | --- |
+| `PORT` | API port (default `5000`). |
+| `MONGO_URI` | MongoDB connection string. |
+| `JWT_SECRET` | Long, random string used to sign tokens. |
+| `FRONTEND_URL` | Deployed client origin for CORS (e.g. `http://localhost:3000`). |
 
+If you deploy the client, configure its environment (e.g. `REACT_APP_API_URL`) to point to the backend URL you expose.
+
+## Project Structure
 ```
 BlindProject/
-├── client/                 # تطبيق React
-│   ├── public/
+├── client/
 │   └── src/
 │       ├── components/
-│       │   ├── auth/      # Login & Register
-│       │   ├── layout/    # Navbar, Footer, Home
-│       │   ├── profile/   # Profile & UserProfile
-│       │   ├── styled/    # مكونات التنسيق
-│       │   └── teams/     # جميع صفحات الفرق
-│       ├── contexts/      # AuthContext
-│       ├── services/      # API calls
-│       └── theme/         # إعدادات Material-UI
-│
-└── server/                # Backend API
-    ├── controllers/       # منطق العمليات
-    ├── middleware/        # Auth & Upload
-    ├── models/           # User & Team Schemas
-    ├── routes/           # API endpoints
-    ├── uploads/          # الصور المرفوعة
-    └── server.js         # نقطة البداية
+│       │   ├── auth/
+│       │   ├── conversations/
+│       │   ├── layout/
+│       │   ├── profile/
+│       │   ├── teams/
+│       │   └── styled/
+│       ├── contexts/
+│       ├── services/
+│       └── theme/
+└── server/
+    ├── controllers/
+    ├── middleware/
+    ├── models/
+    ├── routes/
+    ├── uploads/
+    └── server.js
 ```
 
-## 🔑 الصفحات الرئيسية
+## Core User Journeys
+1. **Create a team**: Define project details, required skills, and coordination links. Accepted members see full details; applicants see anonymized snapshots.
+2. **Search teams**: Browse open teams, request to join, or request a private chat with the owner while identities remain hidden.
+3. **Manage requests**: Owners approve or reject join requests from an alias-based queue and can remove members later.
+4. **Approve conversations**: Any member can send a chat request. Approval reveals real identities and unlocks the conversation inbox.
+5. **Collaborate**: Accepted members use team chat, resources, meeting links, and role tracking to stay aligned.
 
-### للزوار (غير المسجلين):
-- **/** - الصفحة الرئيسية
-- **/login** - تسجيل الدخول
-- **/register** - إنشاء حساب جديد
+## API Surface
 
-### للمستخدمين المسجلين:
-- **/teams** - لوحة التحكم الرئيسية
-- **/teams/create** - إنشاء فريق جديد
-- **/teams/search** - البحث عن فرق
-- **/teams/my-team** - فريقي
-- **/teams/requests** - إدارة الطلبات (للمنشئين)
-- **/profile** - ملفي الشخصي
-- **/profile/:userId** - عرض ملف مستخدم آخر
+### Authentication
+- `POST /api/auth/signup`
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
 
-## 📡 API Endpoints
+### Users
+- `GET /api/users/profile`
+- `PUT /api/users/profile`
+- `GET /api/users/:userId`
 
-### المصادقة (Auth)
-```
-POST /auth/signup    - إنشاء حساب جديد
-POST /auth/login     - تسجيل الدخول
-```
+### Teams
+- `POST /api/teams`
+- `GET /api/teams/my-team`
+- `GET /api/teams/requests`
+- `POST /api/teams/:teamId/request`
+- `POST /api/teams/requests/:requestId/accept`
+- `POST /api/teams/requests/:requestId/reject`
+- `DELETE /api/teams/:teamId/members/:userId`
+- `DELETE /api/teams/:teamId/leave`
+- `GET /api/search/teams`
 
-### المستخدمين (User)
-```
-GET  /user/profile          - جلب بيانات المستخدم الحالي
-GET  /user/profile/:userId  - جلب بيانات مستخدم معين
-PUT  /user/profile          - تحديث الملف الشخصي
-```
+### Conversations
+- `POST /api/conversations` – submit a chat request
+- `GET /api/conversations/pending` – view incoming/outgoing requests
+- `POST /api/conversations/:conversationId/respond` – accept or reject
+- `GET /api/conversations` – list active conversations
+- `GET /api/conversations/:conversationId/messages`
+- `POST /api/conversations/:conversationId/messages`
 
-### الفرق (Teams)
-```
-POST   /teams/create                      - إنشاء فريق
-GET    /teams/available                   - جلب جميع الفرق
-GET    /teams/created                     - الفرق التي أنشأتها
-GET    /teams/myteam                      - فريقي الحالي
-POST   /teams/join/:teamId                - طلب انضمام
-PATCH  /teams/member-status/:teamId/:userId - تحديث حالة عضو
-```
+## Development Notes
+- Sensitive fields (name, email, WhatsApp, avatar) are omitted from responses unless the viewer is an accepted participant or the conversation is active. Keep this guardrail when adding endpoints or UI features.
+- Conversation snapshots store skills at request time. Update `server/controllers/conversationController.js` if you expose new profile metadata in pending views.
+- Review `server/server.js` CORS rules before deploying; set `FRONTEND_URL` and additional origins as needed.
 
-## 🎯 حالات الاستخدام
+## License
 
-### 1. طالب يريد تكوين فريق:
-1. يسجل حساب جديد
-2. يذهب إلى "إنشاء فريق جديد"
-3. يملأ بيانات المشروع والأدوار المطلوبة
-4. ينتظر طلبات الانضمام
-5. يقبل/يرفض الأعضاء حسب احتياجه
-
-### 2. طالب يريد الانضمام لفريق:
-1. يسجل حساب
-2. يبحث عن الفرق المتاحة
-3. يختار الفريق المناسب
-4. يرسل طلب انضمام مع تحديد الدور
-5. ينتظر قبول منشئ الفريق
-
-### 3. التواصل بين الأعضاء:
-- كل عضو في الفريق لديه زر واتساب للتواصل المباشر
-- رابط مجموعة الواتساب الخاصة بالفريق
-
-## � الأمان
-
-- ✅ تشفير كلمات المرور باستخدام bcrypt
-- ✅ JWT tokens لحماية API endpoints
-- ✅ Middleware للتحقق من الصلاحيات
-- ✅ Protected routes في Frontend
-- ✅ التحقق من صحة البيانات في Backend
-
-## 🎨 التحسينات المطبقة
-
-- ✅ حفظ بيانات المستخدم عند إعادة تحميل الصفحة
-- ✅ رسائل نجاح/خطأ واضحة مع auto-dismiss
-- ✅ صفحة رئيسية جذابة للترحيب
-- ✅ تحسين التنقل في Navbar
-- ✅ صفحة عرض ملف شخصي للمستخدمين الآخرين
-- ✅ تكامل كامل مع الواتساب
-- ✅ واجهة مستخدم سهلة وواضحة
-
-## 🐛 استكشاف الأخطاء
-
-### لا يتم حفظ البيانات:
-- ✅ تأكد من اتصال الإنترنت (نستخدم MongoDB Atlas السحابي)
-- ✅ تحقق من إعدادات IP Whitelist في MongoDB Atlas
-- ✅ تحقق من `MONGO_URI` في ملف `.env`
-- ✅ يجب أن ترى "MongoDB Connected" عند تشغيل السيرفر
-
-### "MongooseServerSelectionError":
-1. تحقق من اتصال الإنترنت
-2. اذهب إلى MongoDB Atlas → Network Access
-3. أضف IP Address: 0.0.0.0/0 (للسماح من أي مكان)
-4. انتظر دقيقة حتى يتم التطبيق
-
-### مشاكل في رفع الصور:
-- تأكد من وجود مجلد `uploads` في server
-- تحقق من صلاحيات الكتابة
-
-### مشاكل في الاتصال بين Frontend و Backend:
-- تأكد من تشغيل كلا السيرفرات
-- Frontend على port 3000
-- Backend على port 5000
-
-## 👥 المساهمة
-
-لا تتردد في فتح Pull Request أو Issue لأي تحسينات!
-
-## 📄 الترخيص
-
-ISC License
-
-## 📞 التواصل
-
-تم إنشاؤه بواسطة [@Seif250](https://github.com/Seif250) ❤️
-
-[رابط المشروع](https://github.com/Seif250/BlindProject)
-
----
-
-**ملاحظة:** هذا مشروع تعليمي لأغراض التدريب والتطوير.
+BlindProject is released under the ISC License. Refer to the repository for the full text.
