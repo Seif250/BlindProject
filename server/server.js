@@ -77,6 +77,25 @@ app.use('/api/ratings', ratingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/search', searchRoutes);
 
+// Health check endpoint
+app.get('/', (req, res) => {
+    res.json({ 
+        status: 'Server is running',
+        message: 'BlindProject API',
+        timestamp: new Date().toISOString(),
+        routes: [
+            '/api/auth',
+            '/api/users', 
+            '/api/teams',
+            '/api/search',
+            '/api/notifications',
+            '/api/messages',
+            '/api/ratings',
+            '/api/admin'
+        ]
+    });
+});
+
 // Error handling
 app.use((err, req, res, next) => {
     console.error(err.stack);
