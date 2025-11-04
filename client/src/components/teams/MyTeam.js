@@ -20,6 +20,8 @@ import {
     Link
 } from '@mui/material';
 import { Group, ExitToApp, Delete, OpenInNew, PendingActions } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import TeamChat from './TeamChat';
 import api from '../../services/api';
 
 const difficultyColor = (value) => {
@@ -71,6 +73,7 @@ const normalizeTeam = (team) => {
                 _id: member._id || member.id,
                 name: member.name || member.fullName || 'Member',
                 email: member.email || member.contact,
+                whatsapp: member.whatsapp || member.phone || '',
                 role: member.role || 'Member',
                 avatar: member.avatar || null
             }))
@@ -111,6 +114,8 @@ const MyTeam = () => {
             return {};
         }
     }, []);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchTeam();
@@ -170,7 +175,13 @@ const MyTeam = () => {
         );
     }
 
-    const isCreator = Boolean(team?.creator && (team.creator._id === currentUser?._id || team.isCreator));
+    const currentUserId = currentUser?._id || currentUser?.id;
+    const isCreator = Boolean(team?.creator && (team.creator._id === currentUserId || team.isCreator));
+
+    const handleOpenProfile = (memberId) => {
+        if (!memberId) return;
+        navigate(`/profile/${memberId}`);
+    };
 
     return (
         <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #050714 0%, #0a0f1e 100%)', pt: 12, pb: 8 }}>
@@ -313,7 +324,7 @@ const MyTeam = () => {
                                 {team.members.map((member) => {
                                     const isCreatorMember = team.creator?._id === member._id;
                                     const isCurrentUserCreator = isCreator;
-                                    const canRemove = isCurrentUserCreator && !isCreatorMember && member._id !== currentUser?._id;
+                                    const canRemove = isCurrentUserCreator && !isCreatorMember && member._id !== currentUserId;
                                     const initials = member.name ? member.name.charAt(0).toUpperCase() : 'M';
                                     return (
                                         <ListItem
@@ -329,17 +340,42 @@ const MyTeam = () => {
                                                 ) : null
                                             }
                                         >
-                                            <Avatar src={member.avatar || undefined} sx={{ mr: 2, background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)' }}>{initials}</Avatar>
-                                            <ListItemText
-                                                primary={`${member.name}${member.role ? ` · ${member.role}` : ''}`}
-                                                secondary={member.email}
-                                                primaryTypographyProps={{ sx: { color: '#e2e8f0', fontWeight: 600 } }}
-                                                secondaryTypographyProps={{ sx: { color: 'rgba(226, 232, 240, 0.6)' } }}
-                                            />
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer' }} onClick={() => handleOpenProfile(member._id)}>
+                                                <Avatar src={member.avatar || undefined} sx={{ background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)' }}>{initials}</Avatar>
+                                                <ListItemText
+                                                    primary={`${member.name}${member.role ? ` · ${member.role}` : ''}`}
+                                                    secondary={
+                                                        <Stack spacing={0.3}>
+                                                            {member.email && <Typography sx={{ color: 'rgba(226, 232, 240, 0.62)', fontSize: '0.85rem' }}>{member.email}</Typography>}
+                                                            {member.whatsapp && (
+                                                                <Link
+                                                                    href={`https://wa.me/${member.whatsapp}`}
+                                                                    target="_blank"
+                                                                    rel="noopener"
+                                                                    underline="hover"
+                                                                    sx={{ color: '#2cb67d', fontSize: '0.85rem' }}
+                                                                    onClick={(event) => event.stopPropagation()}
+                                                                >
+                                                                    WhatsApp: {member.whatsapp}
+                                                                </Link>
+                                                            )}
+                                                        </Stack>
+                                                    }
+                                                    primaryTypographyProps={{ sx: { color: '#e2e8f0', fontWeight: 600 } }}
+                                                    secondaryTypographyProps={{ component: 'div' }}
+                                                />
+                                            </Box>
                                         </ListItem>
                                     );
                                 })}
                             </List>
+
+                            {team._id && (
+                                <Box sx={{ mt: 4 }}>
+                                    <Typography variant="h6" sx={{ color: '#e2e8f0', fontWeight: 600, mb: 2 }}>Team Chat</Typography>
+                                    <TeamChat teamId={team._id} currentUserId={currentUserId} />
+                                </Box>
+                            )}
 
                             <Button
                                 fullWidth

@@ -46,6 +46,13 @@ const proficiencyLevels = [
     { value: 'fluent', label: 'Fluent' }
 ];
 
+const genderLabels = {
+    male: 'Male',
+    female: 'Female',
+    other: 'Other',
+    prefer_not_to_say: 'Prefer not to say'
+};
+
 const cloneUserData = (data) => JSON.parse(JSON.stringify(data || {}));
 
 const normalizeUserData = (rawUser) => {
@@ -90,7 +97,7 @@ const normalizeUserData = (rawUser) => {
         whatsapp: rawUser.whatsapp || '',
         department: rawUser.department || '',
         specialization: rawUser.specialization || '',
-        gender: rawUser.gender || '',
+    gender: rawUser.gender || 'prefer_not_to_say',
         year: rawUser.year ?? '',
         gpa: rawUser.gpa ?? '',
         studentId: rawUser.studentId || ''
@@ -210,21 +217,45 @@ const Profile = () => {
         setError('');
         setSuccess('');
         try {
+            const sanitizedSkills = (formData.skills || [])
+                .map((skill) => ({
+                    name: skill.name.trim(),
+                    level: skill.level || 'intermediate'
+                }))
+                .filter((skill) => skill.name);
+
+            const sanitizedLanguages = (formData.languages || [])
+                .map((language) => ({
+                    name: language.name.trim(),
+                    proficiency: language.proficiency || 'intermediate'
+                }))
+                .filter((language) => language.name);
+
+            const sanitizedInterests = (formData.interests || [])
+                .map((interest) => interest.trim())
+                .filter(Boolean);
+
+            const yearValue = formData.year === '' ? null : Number(formData.year);
+            const gpaValue = formData.gpa === '' ? null : Number(formData.gpa);
+
             const payload = {
-                name: formData.name,
-                whatsapp: formData.whatsapp,
-                department: formData.department,
-                year: formData.year,
-                specialization: formData.specialization,
-                gender: formData.gender,
-                bio: formData.bio,
-                interests: formData.interests,
-                skills: formData.skills,
-                languages: formData.languages,
-                socialLinks: formData.socialLinks,
+                name: formData.name?.trim(),
+                whatsapp: formData.whatsapp?.trim(),
+                department: formData.department?.trim(),
+                year: Number.isNaN(yearValue) ? null : yearValue,
+                specialization: formData.specialization?.trim(),
+                gender: formData.gender || 'prefer_not_to_say',
+                bio: formData.bio?.trim(),
+                interests: sanitizedInterests,
+                skills: sanitizedSkills,
+                languages: sanitizedLanguages,
                 preferences: formData.preferences,
-                gpa: formData.gpa,
-                studentId: formData.studentId
+                gpa: Number.isNaN(gpaValue) ? null : gpaValue,
+                studentId: formData.studentId?.trim(),
+                linkedin: formData.socialLinks?.linkedin?.trim(),
+                github: formData.socialLinks?.github?.trim(),
+                portfolio: formData.socialLinks?.portfolio?.trim(),
+                behance: formData.socialLinks?.behance?.trim()
             };
 
             await api.put('/api/users/profile', payload);
@@ -280,7 +311,7 @@ const Profile = () => {
                                     <Grid item xs={12} md={6}>
                                         <Box sx={{ p: 2, background: 'rgba(127, 90, 240, 0.1)', borderRadius: 2, border: '1px solid rgba(127, 90, 240, 0.2)' }}>
                                             <Typography variant="caption" sx={{ color: 'rgba(226, 232, 240, 0.5)', mb: 0.5 }}>Gender</Typography>
-                                            <Typography variant="body1" sx={{ color: '#e2e8f0', fontWeight: 600 }}>{user.gender || 'Not set yet'}</Typography>
+                                            <Typography variant="body1" sx={{ color: '#e2e8f0', fontWeight: 600 }}>{genderLabels[user.gender] || 'Not set yet'}</Typography>
                                         </Box>
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -372,8 +403,8 @@ const Profile = () => {
                                     <Grid item xs={12} md={6}>
                                         <FormControl fullWidth sx={outlinedInputStyles}>
                                             <InputLabel sx={{ color: 'rgba(226, 232, 240, 0.7)' }}>Gender</InputLabel>
-                                            <Select name="gender" label="Gender" value={formData.gender || ''} onChange={handleBasicChange} sx={{ color: '#e2e8f0' }}>
-                                                <MenuItem value="">Prefer not to say</MenuItem>
+                                            <Select name="gender" label="Gender" value={formData.gender || 'prefer_not_to_say'} onChange={handleBasicChange} sx={{ color: '#e2e8f0' }}>
+                                                <MenuItem value="prefer_not_to_say">Prefer not to say</MenuItem>
                                                 <MenuItem value="male">Male</MenuItem>
                                                 <MenuItem value="female">Female</MenuItem>
                                                 <MenuItem value="other">Other</MenuItem>

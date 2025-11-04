@@ -66,6 +66,7 @@ const messageRoutes = require("./routes/messageRoutes");
 const ratingRoutes = require("./routes/ratingRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const searchRoutes = require("./routes/searchRoutes");
+const conversationRoutes = require("./routes/conversationRoutes");
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -75,6 +76,7 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/ratings', ratingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/conversations', conversationRoutes);
 
 // Health check endpoint
 app.get('/', (req, res) => {
@@ -89,6 +91,7 @@ app.get('/', (req, res) => {
             '/api/search',
             '/api/notifications',
             '/api/messages',
+            '/api/conversations',
             '/api/ratings',
             '/api/admin'
         ]

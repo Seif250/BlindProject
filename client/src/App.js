@@ -20,6 +20,7 @@ const CreateTeam = lazy(() => import('./components/teams/CreateTeam'));
 const SearchTeams = lazy(() => import('./components/teams/SearchTeams'));
 const MyTeam = lazy(() => import('./components/teams/MyTeam'));
 const ManageRequests = lazy(() => import('./components/teams/ManageRequests'));
+const Conversations = lazy(() => import('./components/conversations/Conversations'));
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -74,6 +75,7 @@ function App() {
                   <Route path="/teams/search" element={<ProtectedRoute><SearchTeams /></ProtectedRoute>} />
                   <Route path="/teams/my-team" element={<ProtectedRoute><MyTeam /></ProtectedRoute>} />
                   <Route path="/teams/requests" element={<ProtectedRoute><ManageRequests /></ProtectedRoute>} />
+                  <Route path="/conversations" element={<ProtectedRoute><Conversations /></ProtectedRoute>} />
                 </Routes>
               </Suspense>
             </Layout>

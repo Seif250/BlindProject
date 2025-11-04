@@ -15,12 +15,11 @@ import {
     DialogTitle,
     DialogContent,
     IconButton,
-    Tooltip,
     Link,
     Divider
 } from '@mui/material';
-import { Group, Person, Close } from '@mui/icons-material';
-import api from '../../services/api';
+import { Group, Person, Close, ChatBubbleOutline } from '@mui/icons-material';
+import api, { requestConversation } from '../../services/api';
 
 const normalizeTeam = (team) => {
     if (!team || typeof team !== 'object') {
@@ -35,6 +34,11 @@ const normalizeTeam = (team) => {
 
     const timeline = team.timeline || {};
 
+    const creator = team.creator || team.owner || null;
+    const creatorSkills = Array.isArray(creator?.skills)
+        ? creator.skills.map((skill) => (typeof skill === 'string' ? { name: skill, level: 'intermediate' } : skill)).filter(Boolean)
+        : [];
+
     return {
         ...team,
         _id: team._id || team.id,
@@ -44,7 +48,9 @@ const normalizeTeam = (team) => {
         maxMembers,
         currentMembers,
         isFull: team.isFull ?? currentMembers >= maxMembers,
-        creator: team.creator || team.owner || null,
+        creator,
+        creatorDisplayName: creator?.name || creator?.alias || 'Team Owner',
+        creatorSkills,
         members: acceptedMembers.length ? acceptedMembers : membersArray,
         difficulty: team.difficulty || 'intermediate',
         visibility: team.visibility || 'public',
@@ -72,6 +78,7 @@ const SearchTeams = () => {
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [detailsLoading, setDetailsLoading] = useState(false);
     const [detailsError, setDetailsError] = useState('');
+    const [conversationLoading, setConversationLoading] = useState('');
 
     useEffect(() => {
         let isMounted = true;
@@ -134,6 +141,25 @@ const SearchTeams = () => {
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to send request');
+        }
+    };
+
+    const handleConversationRequest = async (recipientId) => {
+        if (!recipientId) {
+            return;
+        }
+        const targetId = recipientId && recipientId.toString ? recipientId.toString() : String(recipientId);
+        setConversationLoading(targetId);
+        setError('');
+        setSuccess('');
+        try {
+            await requestConversation({ recipientId: targetId });
+            setSuccess('Chat request sent to the team owner. Track it from Conversations.');
+            setTimeout(() => setSuccess(''), 4000);
+        } catch (err) {
+            setError(err.response?.data?.message || 'Failed to send chat request');
+        } finally {
+            setConversationLoading('');
         }
     };
 
@@ -205,10 +231,22 @@ const SearchTeams = () => {
                                         )}
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                                             <Chip icon={<Group />} label={`${team.currentMembers}/${team.maxMembers}`} size="small" sx={{ background: 'rgba(44, 198, 125, 0.2)', color: '#2cb67d', fontWeight: 600 }} />
-                                            <Typography variant="caption" sx={{ color: 'rgba(226, 232, 240, 0.5)' }}>by {team.creator?.name || team.creator?.email || 'Unknown'}</Typography>
+                                            <Typography variant="caption" sx={{ color: 'rgba(226, 232, 240, 0.5)' }}>{team.creatorDisplayName}</Typography>
                                         </Box>
                                         <Stack spacing={1.5}>
                                             <Button fullWidth variant="contained" onClick={() => handleJoin(team._id)} sx={{ background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', color: '#fff', fontWeight: 600, '&:hover': { background: 'linear-gradient(135deg, #6b47d6 0%, #25a569 100%)' } }}>Request to Join</Button>
+                                            {team.creator?._id && !team.isCreator && (
+                                                <Button
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    startIcon={<ChatBubbleOutline />}
+                                                    onClick={() => handleConversationRequest(team.creator._id)}
+                                                    disabled={conversationLoading === String(team.creator._id)}
+                                                    sx={{ borderColor: 'rgba(127, 90, 240, 0.35)', color: '#e2e8f0', '&:hover': { borderColor: '#7f5af0', color: '#7f5af0' } }}
+                                                >
+                                                    Chat Owner (Hidden)
+                                                </Button>
+                                            )}
                                             <Button fullWidth variant="outlined" onClick={() => fetchTeamDetails(team._id)} sx={{ borderColor: 'rgba(226, 232, 240, 0.2)', color: '#e2e8f0', '&:hover': { borderColor: '#7f5af0', color: '#7f5af0' } }}>View Details</Button>
                                         </Stack>
                                     </CardContent>
@@ -292,21 +330,14 @@ const SearchTeams = () => {
                                 </Box>
                             )}
 
-                            {selectedTeam.whatsapp && (
+                            {selectedTeam.creatorSkills?.length > 0 && (
                                 <Box sx={{ mb: 3 }}>
-                                    <Typography variant="subtitle2" sx={{ color: 'rgba(226, 232, 240, 0.6)' }}>Contact</Typography>
-                                    <Tooltip title="Open WhatsApp chat">
-                                        <Link href={`https://wa.me/${selectedTeam.whatsapp}`} target="_blank" rel="noopener" underline="hover" sx={{ color: '#2cb67d', fontWeight: 600 }}>
-                                            WhatsApp: {selectedTeam.whatsapp}
-                                        </Link>
-                                    </Tooltip>
-                                </Box>
-                            )}
-
-                            {selectedTeam.meetingLink && (
-                                <Box sx={{ mb: 3 }}>
-                                    <Typography variant="subtitle2" sx={{ color: 'rgba(226, 232, 240, 0.6)' }}>Weekly Sync</Typography>
-                                    <Link href={selectedTeam.meetingLink} target="_blank" rel="noopener" underline="hover" sx={{ color: '#7f5af0' }}>{selectedTeam.meetingLink}</Link>
+                                    <Typography variant="subtitle2" sx={{ color: 'rgba(226, 232, 240, 0.6)' }}>Owner Skills</Typography>
+                                    <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
+                                        {selectedTeam.creatorSkills.map((skill) => (
+                                            <Chip key={`${selectedTeam._id}-${skill.name}`} label={`${skill.name}${skill.level ? ` · ${skill.level}` : ''}`} size="small" sx={{ background: 'rgba(231, 92, 255, 0.2)', color: '#e75cff' }} />
+                                        ))}
+                                    </Stack>
                                 </Box>
                             )}
 
@@ -374,8 +405,22 @@ const SearchTeams = () => {
                             <Divider sx={{ borderColor: 'rgba(127, 90, 240, 0.15)', my: 2 }} />
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <Chip icon={<Group />} label={`${selectedTeam.currentMembers}/${selectedTeam.maxMembers} members`} size="small" sx={{ background: 'rgba(44, 198, 125, 0.2)', color: '#2cb67d', fontWeight: 600 }} />
-                                <Typography variant="caption" sx={{ color: 'rgba(226, 232, 240, 0.5)' }}>Leader: {selectedTeam.creator?.name || selectedTeam.creator?.email || 'Unknown'}</Typography>
+                                <Typography variant="caption" sx={{ color: 'rgba(226, 232, 240, 0.5)' }}>Leader: {selectedTeam.creatorDisplayName}</Typography>
                             </Box>
+                            {selectedTeam.creator?._id && !selectedTeam.isCreator && (
+                                <Box sx={{ mt: 3 }}>
+                                    <Button
+                                        fullWidth
+                                        variant="outlined"
+                                        startIcon={<ChatBubbleOutline />}
+                                        onClick={() => handleConversationRequest(selectedTeam.creator._id)}
+                                        disabled={conversationLoading === String(selectedTeam.creator._id)}
+                                        sx={{ borderColor: 'rgba(127, 90, 240, 0.35)', color: '#e2e8f0', '&:hover': { borderColor: '#7f5af0', color: '#7f5af0' } }}
+                                    >
+                                        Request Private Chat
+                                    </Button>
+                                </Box>
+                            )}
                         </Box>
                     )}
                 </DialogContent>

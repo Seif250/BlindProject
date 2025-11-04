@@ -5,8 +5,8 @@ const Team = require('../models/Team');
 const User = require('../models/User');
 
 const populateTeamQuery = (query) => query
-    .populate('creator', 'name email image whatsapp')
-    .populate('members.user', 'name email image department year whatsapp');
+    .populate('creator', 'name email image whatsapp skills')
+    .populate('members.user', 'name email image department year whatsapp skills');
 
 const getMemberUserId = (member) => {
     if (!member) {
@@ -19,6 +19,13 @@ const getMemberUserId = (member) => {
         return member.user.toString();
     }
     return null;
+};
+
+const createAlias = (prefix, seed) => {
+    const suffix = typeof seed === 'string' && seed.length >= 4
+        ? seed.slice(-4)
+        : Math.random().toString(36).slice(-4);
+    return `${prefix}-${suffix}`;
 };
 
 const normalizeString = (value) => typeof value === 'string' ? value.trim() : '';
@@ -211,6 +218,43 @@ const formatTeam = (team, currentUserId) => {
     const acceptedMembers = team.members.filter(isAcceptedStatus);
     const pendingMembers = team.members.filter((member) => member.status === 'pending');
     const creatorId = team.creator ? team.creator._id.toString() : null;
+    const viewerId = currentUserId ? currentUserId.toString() : null;
+    const isViewerCreator = creatorId && viewerId ? creatorId === viewerId : false;
+    const isViewerAcceptedMember = viewerId ? acceptedMembers.some((member) => getMemberUserId(member) === viewerId) : false;
+    const canViewSensitive = isViewerCreator || isViewerAcceptedMember;
+
+    const creatorSkills = Array.isArray(team.creator?.skills)
+        ? team.creator.skills
+            .map((skill) => {
+                if (typeof skill === 'string') {
+                    return { name: skill, level: 'intermediate' };
+                }
+                if (skill && skill.name) {
+                    return { name: skill.name, level: skill.level || 'intermediate' };
+                }
+                return null;
+            })
+            .filter(Boolean)
+        : [];
+
+    const safeCreator = team.creator ? (canViewSensitive ? {
+        _id: team.creator._id,
+        name: team.creator.name,
+        email: team.creator.email,
+        whatsapp: team.creator.whatsapp || team.whatsapp || null,
+        department: team.creator.department || null,
+        year: team.creator.year || null,
+        skills: creatorSkills
+    } : {
+        _id: team.creator._id,
+        alias: createAlias('TeamOwner', team.creator._id.toString()),
+        skills: creatorSkills.length ? creatorSkills : (Array.isArray(team.requiredSkills)
+            ? team.requiredSkills.map((skill) => ({ name: skill, level: 'intermediate' }))
+            : [])
+    }) : null;
+
+    const safeTeamWhatsapp = canViewSensitive ? (team.whatsapp || (team.creator ? team.creator.whatsapp : null) || null) : null;
+    const safeMeetingLink = canViewSensitive ? (team.meetingLink || '') : '';
 
     return {
         _id: team._id,
@@ -220,16 +264,9 @@ const formatTeam = (team, currentUserId) => {
         maxMembers: team.maxMembers || team.memberLimit || acceptedMembers.length || (team.members ? team.members.length : 0),
         currentMembers: acceptedMembers.length || team.currentMembersCount || (team.members ? team.members.length : 0),
         isFull: (acceptedMembers.length || team.currentMembersCount || 0) >= (team.maxMembers || team.memberLimit || acceptedMembers.length),
-        isCreator: creatorId === (currentUserId ? currentUserId.toString() : null),
-        creator: team.creator ? {
-            _id: team.creator._id,
-            name: team.creator.name,
-            email: team.creator.email,
-            whatsapp: team.creator.whatsapp || team.whatsapp || null,
-            department: team.creator.department || null,
-            year: team.creator.year || null
-        } : null,
-        whatsapp: team.whatsapp || (team.creator ? team.creator.whatsapp : null) || null,
+        isCreator: isViewerCreator,
+        creator: safeCreator,
+        whatsapp: safeTeamWhatsapp,
         difficulty: team.difficulty || 'intermediate',
         tags: Array.isArray(team.tags) ? team.tags : [],
         requiredSkills: Array.isArray(team.requiredSkills) ? team.requiredSkills : [],
@@ -239,7 +276,7 @@ const formatTeam = (team, currentUserId) => {
                 category: tech.category || 'other'
             }))
             : [],
-        meetingLink: team.meetingLink || '',
+        meetingLink: safeMeetingLink,
         timeline: team.timeline ? {
             startDate: team.timeline.startDate || null,
             expectedEndDate: team.timeline.expectedEndDate || null,
@@ -258,24 +295,56 @@ const formatTeam = (team, currentUserId) => {
         pendingRequestsCount: pendingMembers.length,
         createdAt: team.createdAt,
         updatedAt: team.updatedAt,
-        members: acceptedMembers.map((member) => ({
-            _id: member.user && member.user._id ? member.user._id.toString() : member._id.toString(),
-            name: member.user && member.user.name ? member.user.name : 'Unknown',
-            email: member.user && member.user.email ? member.user.email : '',
-            role: member.role || 'Member',
-            avatar: member.user && member.user.image ? member.user.image : null
-        })),
-        pendingRequests: pendingMembers.map((member) => ({
-            _id: member._id,
-            user: member.user ? {
-                _id: member.user._id,
-                name: member.user.name,
-                email: member.user.email,
-                department: member.user.department,
-                year: member.user.year
-            } : null,
-            role: member.role || 'Member'
-        }))
+        members: acceptedMembers.map((member) => {
+            const memberId = member.user && member.user._id ? member.user._id.toString() : member._id.toString();
+            const revealMember = canViewSensitive || (viewerId && memberId === viewerId);
+            const memberSkills = Array.isArray(member.user?.skills)
+                ? member.user.skills
+                    .map((skill) => {
+                        if (typeof skill === 'string') {
+                            return { name: skill, level: 'intermediate' };
+                        }
+                        if (skill && skill.name) {
+                            return { name: skill.name, level: skill.level || 'intermediate' };
+                        }
+                        return null;
+                    })
+                    .filter(Boolean)
+                : [];
+
+            return {
+                _id: memberId,
+                name: revealMember && member.user && member.user.name ? member.user.name : createAlias('Teammate', memberId),
+                email: revealMember && member.user && member.user.email ? member.user.email : '',
+                whatsapp: revealMember && member.user && member.user.whatsapp ? member.user.whatsapp : null,
+                role: member.role || 'Member',
+                avatar: revealMember && member.user && member.user.image ? member.user.image : null,
+                skills: memberSkills
+            };
+        }),
+        pendingRequests: pendingMembers.map((member) => {
+            const applicantSkills = Array.isArray(member.user?.skills)
+                ? member.user.skills
+                    .map((skill) => {
+                        if (typeof skill === 'string') {
+                            return { name: skill, level: 'intermediate' };
+                        }
+                        if (skill && skill.name) {
+                            return { name: skill.name, level: skill.level || 'intermediate' };
+                        }
+                        return null;
+                    })
+                    .filter(Boolean)
+                : [];
+
+            return {
+                _id: member._id,
+                alias: createAlias('Applicant', member._id.toString()),
+                role: member.role || 'Member',
+                skills: applicantSkills,
+                submittedAt: member.createdAt || member.requestedAt || member.joinedAt || member.updatedAt
+            };
+        })
     };
 };
 
@@ -406,21 +475,10 @@ router.get('/requests', auth, async (req, res) => {
             return res.json([]);
         }
 
-        const pending = team.members
-            .filter((member) => member.status === 'pending')
-            .map((member) => ({
-                _id: member._id,
-                user: member.user ? {
-                    _id: member.user._id,
-                    name: member.user.name,
-                    email: member.user.email,
-                    department: member.user.department,
-                    year: member.user.year
-                } : null,
-                role: member.role || 'Member'
-            }));
+        recalcTeamState(team);
+        const formatted = formatTeam(team, req.user.userId);
 
-        res.json(pending);
+        res.json(formatted.pendingRequests);
     } catch (error) {
         console.error('Get team requests error:', error);
         res.status(500).json({ message: 'Failed to load requests' });

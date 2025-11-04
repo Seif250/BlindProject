@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, IconButton, Menu, MenuItem, Avatar, Container } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { Logout, Person, Home, Group, Search } from '@mui/icons-material';
+import { Logout, Person, Home, Group, Search, Chat } from '@mui/icons-material';
 
 const Navbar = () => {
     const { isAuthenticated, user, logout } = useAuth();
@@ -26,6 +26,7 @@ const Navbar = () => {
                                 <Button component={Link} to="/" startIcon={<Home />} sx={{ color: '#e2e8f0', '&:hover': { color: '#7f5af0' } }}>Home</Button>
                                 <Button component={Link} to="/teams" startIcon={<Group />} sx={{ color: '#e2e8f0', '&:hover': { color: '#7f5af0' } }}>Teams</Button>
                                 <Button component={Link} to="/teams/search" startIcon={<Search />} sx={{ color: '#e2e8f0', '&:hover': { color: '#7f5af0' } }}>Search</Button>
+                                <Button component={Link} to="/conversations" startIcon={<Chat />} sx={{ color: '#e2e8f0', '&:hover': { color: '#7f5af0' } }}>Conversations</Button>
                                 <IconButton onClick={handleMenu} size="small"><Avatar sx={{ width: 36, height: 36, background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', fontSize: '0.9rem' }}>{user?.name?.charAt(0)}</Avatar></IconButton>
                                 <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose} PaperProps={{ sx: { background: 'rgba(12, 17, 31, 0.95)', border: '1px solid rgba(127, 90, 240, 0.3)', backdropFilter: 'blur(10px)', mt: 1 } }}>
                                     <MenuItem onClick={() => { navigate('/profile'); handleClose(); }} sx={{ color: '#e2e8f0', '&:hover': { background: 'rgba(127, 90, 240, 0.1)' } }}><Person fontSize="small" sx={{ mr: 1.5 }} />Profile</MenuItem>
