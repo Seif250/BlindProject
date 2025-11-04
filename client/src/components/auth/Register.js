@@ -20,7 +20,7 @@ const Register = () => {
         setError('');
         setLoading(true);
         try {
-            const response = await api.post('/auth/signup', formData);
+            const response = await api.post('/api/auth/signup', formData);
             login(response.data.user, response.data.token);
             navigate('/teams');
         } catch (err) {

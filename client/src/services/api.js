@@ -24,28 +24,28 @@ api.interceptors.request.use(
 
 // Auth API calls
 export const register = async (userData) => {
-    const response = await api.post('/auth/signup', userData);
+    const response = await api.post('/api/auth/signup', userData);
     return response.data;
 };
 
 export const login = async (credentials) => {
-    const response = await api.post('/auth/login', credentials);
+    const response = await api.post('/api/auth/login', credentials);
     return response.data;
 };
 
 export const logout = async () => {
-    const response = await api.post('/auth/logout');
+    const response = await api.post('/api/auth/logout');
     return response.data;
 };
 
 // User API calls
 export const getUserProfile = async () => {
-    const response = await api.get('/user/profile');
+    const response = await api.get('/api/users/profile');
     return response.data;
 };
 
 export const updateUserProfile = async (userData) => {
-    const response = await api.put('/user/profile', userData);
+    const response = await api.put('/api/users/profile', userData);
     return response.data;
 };
 

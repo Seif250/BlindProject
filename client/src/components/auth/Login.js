@@ -20,7 +20,7 @@ const Login = () => {
         setError('');
         setLoading(true);
         try {
-            const response = await api.post('/auth/login', formData);
+            const response = await api.post('/api/auth/login', formData);
             login(response.data.user, response.data.token);
             navigate('/teams');
         } catch (err) {
