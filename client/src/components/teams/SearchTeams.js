@@ -11,12 +11,53 @@ const SearchTeams = () => {
 
     useEffect(() => { fetchTeams(); }, []);
 
+    const normalizeTeam = (team) => {
+        if (!team || typeof team !== 'object') {
+            return null;
+        }
+
+        const acceptedMembers = Array.isArray(team.members)
+            ? team.members.filter(member => (member.status || 'accepted') === 'accepted')
+            : [];
+
+        return {
+            ...team,
+            _id: team._id || team.id,
+            name: team.name || team.projectName || team.title || 'Untitled Team',
+            subject: team.subject || team.category || 'General',
+            description: team.description || team.projectDescription || '',
+            maxMembers: team.maxMembers || team.capacity || team.memberLimit || 0,
+            currentMembers: team.currentMembers !== undefined
+                ? team.currentMembers
+                : team.currentMembersCount !== undefined
+                    ? team.currentMembersCount
+                    : acceptedMembers.length,
+            isFull: team.isFull !== undefined
+                ? team.isFull
+                : acceptedMembers.length >= (team.maxMembers || 0),
+            creator: team.creator || team.owner || null,
+            members: acceptedMembers.length ? acceptedMembers : team.members || []
+        };
+    };
+
     const fetchTeams = async () => {
         try {
             const res = await api.get('/api/search/teams');
-            setTeams(res.data.filter(t => !t.isFull));
+            const rawTeams = Array.isArray(res.data)
+                ? res.data
+                : res.data?.teams
+                    ? res.data.teams
+                    : [];
+
+            const normalizedTeams = rawTeams
+                .map(normalizeTeam)
+                .filter(Boolean)
+                .filter(team => !team.isFull);
+
+            setTeams(normalizedTeams);
         } catch (err) {
-            setError('Failed to load teams');
+            console.error('Search teams error:', err);
+            setError(err.response?.data?.message || 'Failed to load teams');
         } finally {
             setLoading(false);
         }
@@ -54,7 +95,7 @@ const SearchTeams = () => {
                                         <Typography variant="body2" sx={{ color: 'rgba(226, 232, 240, 0.7)', mb: 2, minHeight: 60 }}>{team.description || 'No description'}</Typography>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                                             <Chip icon={<Group />} label={`${team.currentMembers}/${team.maxMembers}`} size="small" sx={{ background: 'rgba(44, 198, 125, 0.2)', color: '#2cb67d', fontWeight: 600 }} />
-                                            <Typography variant="caption" sx={{ color: 'rgba(226, 232, 240, 0.5)' }}>by {team.creator?.name || 'Unknown'}</Typography>
+                                            <Typography variant="caption" sx={{ color: 'rgba(226, 232, 240, 0.5)' }}>by {team.creator?.name || team.creator?.email || 'Unknown'}</Typography>
                                         </Box>
                                         <Button fullWidth variant="contained" onClick={() => handleJoin(team._id)} sx={{ background: 'linear-gradient(135deg, #7f5af0 0%, #2cb67d 100%)', color: '#fff', fontWeight: 600, '&:hover': { background: 'linear-gradient(135deg, #6b47d6 0%, #25a569 100%)' } }}>Request to Join</Button>
                                     </CardContent>
